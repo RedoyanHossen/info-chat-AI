@@ -1,0 +1,1156 @@
+<!-- Created by [Redoyan], 09/08/2025 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MessTracker Lite</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #64748b;
+            --background-start: #f5f7fa;
+            --background-end: #eef2f7;
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --text-color: #334155;
+            --heading-color: #1e293b;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --shadow-color: rgba(99, 102, 241, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--background-start), var(--background-end));
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Auth Page Styles */
+        #auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .auth-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+        #login-form, #signup-form {
+            width: 100%;
+        }
+        #signup-form {
+            display: none;
+        }
+
+        /* Main App Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+        }
+        .nav-link {
+            color: var(--secondary-color) !important;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        h2, h4 {
+            color: var(--heading-color);
+            font-weight: 700;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px var(--shadow-color);
+        }
+        .stat-icon {
+            font-size: 2.5rem;
+            background: -webkit-linear-gradient(45deg, var(--primary-color), #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.5;
+        }
+        .card.bg-primary {
+            background: linear-gradient(45deg, var(--primary-color), #6366f1);
+            color: white;
+        }
+        .card.bg-primary .stat-icon {
+            -webkit-text-fill-color: rgba(255,255,255,0.5);
+        }
+
+        .form-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        #import-data {
+            display: none;
+        }
+
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            border: 1px solid #cbd5e1;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--shadow-color);
+        }
+
+        .btn {
+            border-radius: 0.5rem;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), #6366f1);
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: var(--heading-color);
+        }
+        .btn-danger {
+            background: linear-gradient(45deg, #ef4444, #f87171);
+            color: white;
+        }
+
+        .table {
+            background-color: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .table thead {
+            background-color: #f1f5f9;
+        }
+        .table th {
+            color: var(--heading-color);
+            font-weight: 600;
+        }
+
+        .balance-owed { color: #ef4444; font-weight: 600; }
+        .balance-extra { color: #22c55e; font-weight: 600; }
+    </style>
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf-autotable.min.js"></script>
+</head>
+<body>
+    <!-- Authentication Page -->
+    <div id="auth-container" class="page active">
+        <div class="auth-card">
+            <!-- Login Form -->
+            <form id="login-form">
+                <h2 class="text-center mb-4">Welcome Back!</h2>
+                <div class="mb-3">
+                    <label for="login-email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="login-email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="login-password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="login-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
+                <p class="text-center mt-3 text-muted">
+                    Don't have an account? <a href="#" id="show-signup">Sign up</a>
+                </p>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signup-form">
+                <h2 class="text-center mb-4">Create Account</h2>
+                <div class="mb-3">
+                    <label for="signup-name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="signup-name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="signup-email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="signup-email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="signup-password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="signup-password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-3">Sign Up</button>
+                <p class="text-center mt-3 text-muted">
+                    Already have an account? <a href="#" id="show-login">Log in</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div id="app-container" class="page">
+        <nav class="navbar navbar-expand-lg sticky-top">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-card-checklist"></i> MessTracker Lite
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" data-page="dashboard">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="members">Members</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="expenses">Expenses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="meals">Meals</a>
+                        </li>
+                         <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="reports">Reports</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-gear-fill"></i> Actions
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
+                                <li><button class="dropdown-item" id="export-data-btn"><i class="bi bi-file-earmark-pdf me-2"></i> Export Report (PDF)</button></li>
+                                <li><button class="dropdown-item" id="import-data-btn-visible"><i class="bi bi-upload me-2"></i> Import Data</button></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><button class="dropdown-item text-danger" id="reset-data-btn"><i class="bi bi-trash me-2"></i> Reset All Data</button></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><button class="dropdown-item" id="logout-btn"><i class="bi bi-box-arrow-right me-2"></i> Logout</button></li>
+                            </ul>
+                            <input type="file" id="import-data" accept=".json">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container mt-4 mb-5">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                     <h2 class="mb-0">Dashboard</h2>
+                     <span class="text-muted fs-6" id="dashboard-month-label"></span>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card h-100">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title text-muted">Total Members</h5>
+                                    <p class="card-text fs-2 fw-bold" id="total-members-stat">0</p>
+                                </div>
+                                <i class="bi bi-people-fill stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card h-100">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title text-muted">Total Expenses</h5>
+                                    <p class="card-text fs-2 fw-bold" id="total-expenses-stat">৳0</p>
+                                </div>
+                                <i class="bi bi-cart-check-fill stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card h-100">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title text-muted">Total Meals</h5>
+                                    <p class="card-text fs-2 fw-bold" id="total-meals-stat">0</p>
+                                </div>
+                                <i class="bi bi-egg-fried stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card h-100 bg-primary">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="card-title">Meal Rate</h5>
+                                    <p class="card-text fs-2 fw-bold" id="meal-rate-stat">৳0.00</p>
+                                </div>
+                                <i class="bi bi-graph-up-arrow stat-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Members Page -->
+            <div id="members" class="page">
+                <h2 class="mb-4">Manage Members</h2>
+                <div class="form-section">
+                    <h4 id="member-form-title" class="mb-3">Add New Member</h4>
+                    <form id="member-form">
+                        <input type="hidden" id="member-id">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="member-name" class="form-label">Member Name</label>
+                                <input type="text" class="form-control" id="member-name" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="member-join-date" class="form-label">Join Date</label>
+                                <input type="date" class="form-control" id="member-join-date" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="member-leave-date" class="form-label">Leave Date (Optional)</label>
+                                <input type="date" class="form-control" id="member-leave-date">
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Save Member</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-member-edit-btn" style="display: none;">Cancel Edit</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Join Date</th>
+                                <th>Leave Date</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="members-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Expenses Page -->
+            <div id="expenses" class="page">
+                <h2 class="mb-4">Track Expenses</h2>
+                <div class="form-section">
+                    <h4 id="expense-form-title" class="mb-3">Add New Expense</h4>
+                    <form id="expense-form">
+                        <input type="hidden" id="expense-id">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label for="expense-date" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="expense-date" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="expense-amount" class="form-label">Amount (৳)</label>
+                                <input type="number" class="form-control" id="expense-amount" step="0.01" min="0" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="expense-paid-by" class="form-label">Paid By</label>
+                                <select id="expense-paid-by" class="form-select" required></select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="expense-description" class="form-label">Description</label>
+                                <input type="text" class="form-control" id="expense-description" required>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">Save Expense</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-expense-edit-btn" style="display: none;">Cancel Edit</button>
+                        </div>
+                    </form>
+                </div>
+                 <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Paid By</th>
+                                <th>Amount</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenses-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Meals Page -->
+            <div id="meals" class="page">
+                <h2 class="mb-4">Daily Meal Entry</h2>
+                <div class="form-section">
+                     <h4 id="meal-form-title" class="mb-3">Add/Update Meal</h4>
+                    <form id="meal-form">
+                        <input type="hidden" id="meal-entry-id">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                 <label for="meal-date" class="form-label">Date</label>
+                                 <input type="date" class="form-control" id="meal-date" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="meal-member-select" class="form-label">Member</label>
+                                <select id="meal-member-select" class="form-select" required></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="meal-count" class="form-label">Meal Count</label>
+                                <input type="number" min="0" class="form-control" id="meal-count" required>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                             <button type="submit" class="btn btn-primary">Save Meal</button>
+                             <button type="button" class="btn btn-secondary" id="cancel-meal-edit-btn" style="display: none;">Cancel Edit</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="table-responsive">
+                     <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Member Name</th>
+                                <th>Meal Count</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="meals-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reports Page -->
+            <div id="reports" class="page">
+                <h2 class="mb-4">Member Summary Report</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Member Name</th>
+                                <th>Total Meals</th>
+                                <th>Total Paid (৳)</th>
+                                <th>Total Cost (৳)</th>
+                                <th>Balance (Owes / Extra) (৳)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reports-table-body"></tbody>
+                        <tfoot id="reports-table-footer" class="table-group-divider fw-bold"></tfoot>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+        
+        <footer class="container text-center text-muted py-4">
+            <p>&copy; 2025 MessTracker Lite. All data is stored locally in your browser.</p>
+        </footer>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- AUTHENTICATION LOGIC ---
+        const authContainer = document.getElementById('auth-container');
+        const appContainer = document.getElementById('app-container');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const showSignupBtn = document.getElementById('show-signup');
+        const showLoginBtn = document.getElementById('show-login');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        const checkAuth = () => {
+            if (localStorage.getItem('isLoggedIn') === 'true') {
+                authContainer.classList.remove('active');
+                appContainer.classList.add('active');
+                initializeMainApp();
+            } else {
+                authContainer.classList.add('active');
+                appContainer.classList.remove('active');
+            }
+        };
+
+        showSignupBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+        });
+
+        showLoginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            signupForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // This is a simulated login. In a real app, you would send a request to a server.
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            if (email && password) {
+                localStorage.setItem('isLoggedIn', 'true');
+                checkAuth();
+            } else {
+                alert('Please enter email and password.');
+            }
+        });
+
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // This is a simulated signup.
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            if (name && email && password) {
+                localStorage.setItem('isLoggedIn', 'true');
+                checkAuth();
+            } else {
+                alert('Please fill all fields.');
+            }
+        });
+        
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('isLoggedIn');
+            window.location.reload();
+        });
+
+
+        // --- MAIN APPLICATION LOGIC ---
+        let appData = {};
+        let editingItemId = null;
+        
+        const DB_KEY = 'messTrackerLiteData';
+        
+        const getEmptyData = () => ({
+            members: [],
+            expenses: [],
+            meals: []
+        });
+
+        const saveData = () => {
+            localStorage.setItem(DB_KEY, JSON.stringify(appData));
+        };
+
+        const loadData = () => {
+            const data = localStorage.getItem(DB_KEY);
+            if (data) {
+                appData = JSON.parse(data);
+            } else {
+                appData = getEmptyData();
+                saveData();
+            }
+        };
+
+        const getMemberName = (id) => {
+            const member = appData.members.find(m => m.id == id);
+            return member ? member.name : 'N/A';
+        };
+
+        const formatCurrency = (amount) => `৳${amount.toFixed(2)}`;
+        
+        const getActiveMembersForDate = (date) => {
+            if (!date) return [];
+            const checkDate = new Date(date);
+            return appData.members.filter(m => {
+                const joinDate = new Date(m.joinDate);
+                const leaveDate = m.leaveDate ? new Date(m.leaveDate) : null;
+                const joined = joinDate <= checkDate;
+                const notLeft = !leaveDate || checkDate <= leaveDate;
+                return joined && notLeft;
+            });
+        };
+
+        const renderAll = () => {
+            const mealDate = document.getElementById('meal-date').value;
+            populateMemberDropdowns(mealDate);
+            renderDashboard();
+            renderMembers();
+            renderExpenses();
+            renderMeals();
+            renderReports();
+        };
+        
+        const populateMemberDropdowns = (date) => {
+            const expensePaidBySelect = document.getElementById('expense-paid-by');
+            const mealMemberSelect = document.getElementById('meal-member-select');
+            
+            const activeMembers = getActiveMembersForDate(date);
+
+            const expenseSelected = expensePaidBySelect.value;
+            const mealSelected = mealMemberSelect.value;
+
+            expensePaidBySelect.innerHTML = '<option value="">Select Member</option>';
+            mealMemberSelect.innerHTML = '<option value="">Select Member</option>';
+
+            activeMembers.forEach(member => {
+                const option = `<option value="${member.id}">${member.name}</option>`;
+                expensePaidBySelect.innerHTML += option;
+                mealMemberSelect.innerHTML += option;
+            });
+            expensePaidBySelect.value = expenseSelected;
+            mealMemberSelect.value = mealSelected;
+        };
+
+        const renderDashboard = () => {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+            
+            const monthName = now.toLocaleString('default', { month: 'long' });
+            document.getElementById('dashboard-month-label').textContent = `${monthName} ${currentYear}`;
+
+            const membersThisMonth = appData.members.filter(m => {
+                const joinDate = new Date(m.joinDate);
+                const leaveDate = m.leaveDate ? new Date(m.leaveDate) : null;
+                const joinedInOrBeforeMonth = joinDate.getFullYear() < currentYear || (joinDate.getFullYear() === currentYear && joinDate.getMonth() <= currentMonth);
+                const leftInOrAfterMonth = !leaveDate || leaveDate.getFullYear() > currentYear || (leaveDate.getFullYear() === currentYear && leaveDate.getMonth() >= currentMonth);
+                return joinedInOrBeforeMonth && leftInOrAfterMonth;
+            });
+
+            const expensesThisMonth = appData.expenses.filter(e => {
+                const expenseDate = new Date(e.date);
+                return expenseDate.getFullYear() === currentYear && expenseDate.getMonth() === currentMonth;
+            });
+
+            const mealsThisMonth = appData.meals.filter(m => {
+                const mealDate = new Date(m.date);
+                return mealDate.getFullYear() === currentYear && mealDate.getMonth() === currentMonth;
+            });
+            
+            const totalExpenses = expensesThisMonth.reduce((sum, e) => sum + parseFloat(e.amount), 0);
+            const totalMeals = mealsThisMonth.reduce((sum, day) => sum + Object.values(day.counts).reduce((dsum, count) => dsum + count, 0), 0);
+            const mealRate = totalMeals > 0 ? totalExpenses / totalMeals : 0;
+
+            document.getElementById('total-members-stat').textContent = membersThisMonth.length;
+            document.getElementById('total-expenses-stat').textContent = formatCurrency(totalExpenses);
+            document.getElementById('total-meals-stat').textContent = totalMeals;
+            document.getElementById('meal-rate-stat').textContent = formatCurrency(mealRate);
+        };
+        
+        const renderMembers = () => {
+            const tableBody = document.getElementById('members-table-body');
+            tableBody.innerHTML = '';
+            if (appData.members.length === 0) {
+                 tableBody.innerHTML = '<tr><td colspan="4" class="text-center p-4">No members found. Add a new member to get started.</td></tr>';
+                 return;
+            }
+            appData.members.forEach(member => {
+                const row = `
+                    <tr>
+                        <td>${member.name}</td>
+                        <td>${member.joinDate}</td>
+                        <td>${member.leaveDate || 'N/A'}</td>
+                        <td class="text-end table-actions">
+                            <button class="btn btn-sm btn-outline-primary me-2" data-id="${member.id}" data-action="edit-member"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" data-id="${member.id}" data-action="delete-member"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        };
+
+        const renderExpenses = () => {
+            const tableBody = document.getElementById('expenses-table-body');
+            tableBody.innerHTML = '';
+            if (appData.expenses.length === 0) {
+                 tableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4">No expenses recorded.</td></tr>';
+                 return;
+            }
+            const sortedExpenses = [...appData.expenses].sort((a,b) => new Date(b.date) - new Date(a.date));
+            sortedExpenses.forEach(expense => {
+                const row = `
+                    <tr>
+                        <td>${expense.date}</td>
+                        <td>${expense.description}</td>
+                        <td>${getMemberName(expense.paidBy)}</td>
+                        <td>${formatCurrency(expense.amount)}</td>
+                        <td class="text-end table-actions">
+                            <button class="btn btn-sm btn-outline-primary me-2" data-id="${expense.id}" data-action="edit-expense"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" data-id="${expense.id}" data-action="delete-expense"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        };
+        
+        const renderMeals = () => {
+            const tableBody = document.getElementById('meals-table-body');
+            tableBody.innerHTML = '';
+            
+            const allMealEntries = [];
+            appData.meals.forEach(day => {
+                for (const memberId in day.counts) {
+                    allMealEntries.push({
+                        id: `${day.date}_${memberId}`,
+                        date: day.date,
+                        memberId: memberId,
+                        count: day.counts[memberId]
+                    });
+                }
+            });
+
+            if (allMealEntries.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" class="text-center p-4">No meals recorded.</td></tr>';
+                return;
+            }
+
+            allMealEntries.sort((a, b) => new Date(b.date) - new Date(a.date) || a.memberId.localeCompare(b.memberId));
+            
+            allMealEntries.forEach(entry => {
+                const row = `
+                    <tr>
+                        <td>${entry.date}</td>
+                        <td>${getMemberName(entry.memberId)}</td>
+                        <td>${entry.count}</td>
+                        <td class="text-end table-actions">
+                            <button class="btn btn-sm btn-outline-primary me-2" data-id="${entry.id}" data-action="edit-meal"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger" data-id="${entry.id}" data-action="delete-meal"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        };
+        
+        const renderReports = () => {
+            const tableBody = document.getElementById('reports-table-body');
+            const tableFooter = document.getElementById('reports-table-footer');
+            tableBody.innerHTML = '';
+            tableFooter.innerHTML = '';
+            
+            const totalExpenses = appData.expenses.reduce((sum, e) => sum + e.amount, 0);
+            const totalMeals = appData.meals.reduce((sum, day) => sum + Object.values(day.counts).reduce((dsum, count) => dsum + count, 0), 0);
+            const mealRate = totalMeals > 0 ? totalExpenses / totalMeals : 0;
+            
+            let grandTotalPaid = 0;
+            let grandTotalCost = 0;
+            let grandTotalBalance = 0;
+
+            if (appData.members.length === 0) {
+                 tableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4">No data to generate a report.</td></tr>';
+                 return;
+            }
+            
+            appData.members.forEach(member => {
+                const mealsByMember = appData.meals.reduce((sum, day) => sum + (day.counts[member.id] || 0), 0);
+                const paidByMember = appData.expenses.filter(e => e.paidBy == member.id).reduce((sum, e) => sum + e.amount, 0);
+                const costForMember = mealsByMember * mealRate;
+                const balance = paidByMember - costForMember;
+
+                grandTotalPaid += paidByMember;
+                grandTotalCost += costForMember;
+                grandTotalBalance += balance;
+
+                const balanceClass = balance < 0 ? 'balance-owed' : 'balance-extra';
+                const balanceText = `${formatCurrency(Math.abs(balance))} ${balance < 0 ? '(Owed)' : '(Extra)'}`;
+                
+                const row = `
+                    <tr>
+                        <td>${member.name}</td>
+                        <td>${mealsByMember}</td>
+                        <td>${formatCurrency(paidByMember)}</td>
+                        <td>${formatCurrency(costForMember)}</td>
+                        <td class="${balanceClass}">${balanceText}</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+
+            const footerRow = `
+                <tr>
+                    <td><strong>Totals</strong></td>
+                    <td><strong>${totalMeals}</strong></td>
+                    <td><strong>${formatCurrency(grandTotalPaid)}</strong></td>
+                    <td><strong>${formatCurrency(grandTotalCost)}</strong></td>
+                    <td>Balance check: ${formatCurrency(grandTotalBalance)} ${Math.abs(grandTotalBalance) < 0.01 ? '✔' : '✖'}</td>
+                </tr>
+            `;
+            tableFooter.innerHTML = footerRow;
+        };
+        
+        const initializeMainApp = () => {
+            document.querySelector('.navbar-nav').addEventListener('click', (e) => {
+                if (e.target.matches('a.nav-link')) {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                    e.target.classList.add('active');
+                    
+                    const pageId = e.target.dataset.page;
+                    document.querySelectorAll('#app-container .page').forEach(page => page.classList.remove('active'));
+                    document.getElementById(pageId).classList.add('active');
+                }
+            });
+            
+            document.getElementById('member-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const member = {
+                    id: editingItemId ? editingItemId : Date.now(),
+                    name: document.getElementById('member-name').value.trim(),
+                    joinDate: document.getElementById('member-join-date').value,
+                    leaveDate: document.getElementById('member-leave-date').value
+                };
+                
+                if (editingItemId) {
+                    const index = appData.members.findIndex(m => m.id == editingItemId);
+                    appData.members[index] = member;
+                } else {
+                    appData.members.push(member);
+                }
+                
+                saveData();
+                renderAll();
+                resetMemberForm();
+            });
+            
+            const resetMemberForm = () => {
+                document.getElementById('member-form').reset();
+                document.getElementById('member-form-title').textContent = 'Add New Member';
+                document.getElementById('cancel-member-edit-btn').style.display = 'none';
+                editingItemId = null;
+            };
+
+            document.getElementById('cancel-member-edit-btn').addEventListener('click', resetMemberForm);
+
+            document.getElementById('expense-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const expense = {
+                    id: editingItemId ? editingItemId : Date.now(),
+                    date: document.getElementById('expense-date').value,
+                    amount: parseFloat(document.getElementById('expense-amount').value),
+                    description: document.getElementById('expense-description').value.trim(),
+                    paidBy: parseInt(document.getElementById('expense-paid-by').value)
+                };
+                
+                if (editingItemId) {
+                    const index = appData.expenses.findIndex(exp => exp.id == editingItemId);
+                    appData.expenses[index] = expense;
+                } else {
+                    appData.expenses.push(expense);
+                }
+                
+                saveData();
+                renderAll();
+                resetExpenseForm();
+            });
+            
+            const resetExpenseForm = () => {
+                document.getElementById('expense-form').reset();
+                document.getElementById('expense-form-title').textContent = 'Add New Expense';
+                document.getElementById('cancel-expense-edit-btn').style.display = 'none';
+                editingItemId = null;
+            };
+            
+            document.getElementById('cancel-expense-edit-btn').addEventListener('click', resetExpenseForm);
+            
+            document.getElementById('meal-date').addEventListener('change', (e) => {
+                 populateMemberDropdowns(e.target.value);
+            });
+
+            document.getElementById('meal-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const date = document.getElementById('meal-date').value;
+                const memberId = document.getElementById('meal-member-select').value;
+                const count = parseInt(document.getElementById('meal-count').value, 10);
+
+                if (!date || !memberId || isNaN(count)) {
+                    alert('Please fill all fields correctly.');
+                    return;
+                }
+
+                let dayEntry = appData.meals.find(m => m.date === date);
+                if (!dayEntry) {
+                    dayEntry = { id: date, date: date, counts: {} };
+                    appData.meals.push(dayEntry);
+                }
+
+                if (count > 0) {
+                    dayEntry.counts[memberId] = count;
+                } else {
+                    delete dayEntry.counts[memberId];
+                }
+
+                if (Object.keys(dayEntry.counts).length === 0) {
+                    appData.meals = appData.meals.filter(m => m.id !== date);
+                }
+                
+                saveData();
+                renderAll();
+                resetMealForm();
+            });
+
+            const resetMealForm = () => {
+                const mealForm = document.getElementById('meal-form');
+                mealForm.reset();
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('meal-date').value = today;
+                document.getElementById('meal-form-title').textContent = 'Add/Update Meal';
+                document.getElementById('cancel-meal-edit-btn').style.display = 'none';
+                document.getElementById('meal-member-select').disabled = false;
+                document.getElementById('meal-date').disabled = false;
+                editingItemId = null;
+            };
+
+            document.getElementById('cancel-meal-edit-btn').addEventListener('click', resetMealForm);
+
+            document.querySelector('#app-container main').addEventListener('click', (e) => {
+                const button = e.target.closest('button[data-action]');
+                if (!button) return;
+
+                const action = button.dataset.action;
+                const id = button.dataset.id;
+                
+                if (action === 'edit-member') {
+                    const member = appData.members.find(m => m.id == id);
+                    editingItemId = member.id;
+                    document.getElementById('member-id').value = member.id;
+                    document.getElementById('member-name').value = member.name;
+                    document.getElementById('member-join-date').value = member.joinDate;
+                    document.getElementById('member-leave-date').value = member.leaveDate;
+                    document.getElementById('member-form-title').textContent = 'Edit Member';
+                    document.getElementById('cancel-member-edit-btn').style.display = 'inline-block';
+                    document.querySelector('a[data-page="members"]').click();
+                    window.scrollTo(0, 0);
+                }
+                if (action === 'delete-member') {
+                    if (confirm('Are you sure you want to delete this member? This will also remove their associated expenses and meals.')) {
+                        appData.members = appData.members.filter(m => m.id != id);
+                        appData.expenses = appData.expenses.filter(e => e.paidBy != id);
+                        appData.meals.forEach(day => delete day.counts[id]);
+                        saveData();
+                        renderAll();
+                    }
+                }
+                
+                if (action === 'edit-expense') {
+                    const expense = appData.expenses.find(exp => exp.id == id);
+                    editingItemId = expense.id;
+                    document.getElementById('expense-id').value = expense.id;
+                    document.getElementById('expense-date').value = expense.date;
+                    document.getElementById('expense-amount').value = expense.amount;
+                    document.getElementById('expense-description').value = expense.description;
+                    document.getElementById('expense-paid-by').value = expense.paidBy;
+                    document.getElementById('expense-form-title').textContent = 'Edit Expense';
+                    document.getElementById('cancel-expense-edit-btn').style.display = 'inline-block';
+                    document.querySelector('a[data-page="expenses"]').click();
+                    window.scrollTo(0, 0);
+                }
+                if (action === 'delete-expense') {
+                    if (confirm('Are you sure you want to delete this expense?')) {
+                        appData.expenses = appData.expenses.filter(exp => exp.id != id);
+                        saveData();
+                        renderAll();
+                    }
+                }
+                
+                if (action === 'edit-meal') {
+                    const [date, memberId] = id.split('_');
+                    const dayEntry = appData.meals.find(m => m.date === date);
+                    if (!dayEntry) return;
+
+                    const count = dayEntry.counts[memberId];
+                    
+                    editingItemId = id;
+                    document.getElementById('meal-date').value = date;
+                    populateMemberDropdowns(date);
+                    document.getElementById('meal-member-select').value = memberId;
+                    document.getElementById('meal-count').value = count;
+                    
+                    document.getElementById('meal-form-title').textContent = 'Edit Meal';
+                    document.getElementById('cancel-meal-edit-btn').style.display = 'inline-block';
+                    document.getElementById('meal-member-select').disabled = true;
+                    document.getElementById('meal-date').disabled = true;
+
+                    document.querySelector('a[data-page="meals"]').click();
+                    window.scrollTo(0, 0);
+                }
+                if (action === 'delete-meal') {
+                    if (confirm('Are you sure you want to delete this meal entry?')) {
+                        const [date, memberId] = id.split('_');
+                        const dayEntry = appData.meals.find(m => m.date === date);
+                        if (dayEntry) {
+                            delete dayEntry.counts[memberId];
+                            if (Object.keys(dayEntry.counts).length === 0) {
+                                appData.meals = appData.meals.filter(m => m.id !== date);
+                            }
+                        }
+                        saveData();
+                        renderAll();
+                    }
+                }
+            });
+            
+            const generateReportPDF = () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                if (appData.members.length === 0) {
+                    alert("No data available to generate a report.");
+                    return;
+                }
+
+                const reportTable = document.getElementById('reports-table-body');
+                const reportFooter = document.getElementById('reports-table-footer');
+                const head = [['Member Name', 'Total Meals', 'Total Paid (BDT)', 'Total Cost (BDT)', 'Balance (BDT)']];
+                
+                const body = [];
+                reportTable.querySelectorAll('tr').forEach(row => {
+                    const rowData = [];
+                    row.querySelectorAll('td').forEach(cell => {
+                        let cellText = cell.innerText.replace(/\(Owed\)/g, '').replace(/\(Extra\)/g, '').replace(/৳/g, '').trim();
+                        if (cell.classList.contains('balance-owed')) {
+                            cellText = `-${cellText}`;
+                        }
+                        rowData.push(cellText);
+                    });
+                    body.push(rowData);
+                });
+
+                const footer = [];
+                reportFooter.querySelectorAll('tr').forEach(row => {
+                    const rowData = [];
+                    row.querySelectorAll('td').forEach(cell => {
+                        rowData.push(cell.innerText.replace(/৳/g, '').trim());
+                    });
+                    footer.push(rowData);
+                });
+
+                const monthLabel = document.getElementById('dashboard-month-label').innerText;
+                const title = "Member Summary Report";
+                
+                doc.setFontSize(18);
+                doc.text(title, 14, 22);
+                doc.setFontSize(11);
+                doc.setTextColor(100);
+                doc.text(`Month: ${monthLabel}`, 14, 29);
+
+                doc.autoTable({
+                    head: head,
+                    body: body,
+                    foot: footer,
+                    startY: 35,
+                    theme: 'grid',
+                    headStyles: { fillColor: [79, 70, 229] },
+                    footStyles: { fillColor: [241, 245, 249], textColor: [30, 41, 59], fontStyle: 'bold' },
+                    didDrawPage: function (data) {
+                        const str = "Page " + doc.internal.getNumberOfPages();
+                        doc.setFontSize(10);
+                        const pageSize = doc.internal.pageSize;
+                        const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
+                        doc.text(str, data.settings.margin.left, pageHeight - 10);
+                    }
+                });
+
+                const date = new Date().toISOString().split('T')[0];
+                doc.save(`Mess_Report_${date}.pdf`);
+            };
+
+            document.getElementById('export-data-btn').addEventListener('click', generateReportPDF);
+            
+            document.getElementById('import-data-btn-visible').addEventListener('click', () => {
+                 document.getElementById('import-data').click();
+            });
+
+            document.getElementById('import-data').addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                if (!confirm("Are you sure you want to import data? This will overwrite all current data.")) {
+                    event.target.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (importedData.members && importedData.expenses && importedData.meals) {
+                            appData = importedData;
+                            saveData();
+                            renderAll();
+                            alert('Data imported successfully!');
+                        } else {
+                            alert('Invalid data file format.');
+                        }
+                    } catch (error) {
+                        alert('Error reading or parsing file: ' + error.message);
+                    } finally {
+                        event.target.value = '';
+                    }
+                };
+                reader.readAsText(file);
+            });
+            
+            document.getElementById('reset-data-btn').addEventListener('click', () => {
+                if (confirm('DANGER! This will delete ALL data and reset the app to a blank state. This action cannot be undone. Are you absolutely sure?')) {
+                    appData = getEmptyData();
+                    saveData();
+                    renderAll();
+                    alert('All data has been reset to a blank state.');
+                }
+            });
+
+            loadData();
+            renderAll();
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('member-join-date').value = today;
+            document.getElementById('expense-date').value = today;
+            document.getElementById('meal-date').value = today;
+            populateMemberDropdowns(today);
+        }
+
+        // --- INITIALIZATION ---
+        checkAuth();
+        
+    });
+    </script>
+</body>
+</html>
