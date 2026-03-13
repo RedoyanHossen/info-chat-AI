@@ -1,1156 +1,1331 @@
-<!-- Created by [Redoyan], 09/08/2025 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MessTracker Lite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QuickMeet - WebRTC Group Video Call</title>
     
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <style>
-        :root {
-            --primary-color: #4f46e5;
-            --primary-hover: #4338ca;
-            --secondary-color: #64748b;
-            --background-start: #f5f7fa;
-            --background-end: #eef2f7;
-            --card-bg: rgba(255, 255, 255, 0.75);
-            --text-color: #334155;
-            --heading-color: #1e293b;
-            --border-color: rgba(0, 0, 0, 0.08);
-            --shadow-color: rgba(99, 102, 241, 0.2);
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, var(--background-start), var(--background-end));
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-
-        .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Auth Page Styles */
-        #auth-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .auth-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 450px;
-        }
-        #login-form, #signup-form {
-            width: 100%;
-        }
-        #signup-form {
-            display: none;
-        }
-
-        /* Main App Styles */
-        .navbar {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .navbar-brand {
-            font-weight: 700;
-            color: var(--primary-color) !important;
-        }
-        .nav-link {
-            color: var(--secondary-color) !important;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-        .nav-link.active, .nav-link:hover {
-            color: var(--primary-color) !important;
-        }
-
-        h2, h4 {
-            color: var(--heading-color);
-            font-weight: 700;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 1rem;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px var(--shadow-color);
-        }
-        .stat-icon {
-            font-size: 2.5rem;
-            background: -webkit-linear-gradient(45deg, var(--primary-color), #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            opacity: 0.5;
-        }
-        .card.bg-primary {
-            background: linear-gradient(45deg, var(--primary-color), #6366f1);
-            color: white;
-        }
-        .card.bg-primary .stat-icon {
-            -webkit-text-fill-color: rgba(255,255,255,0.5);
-        }
-
-        .form-section {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 1rem;
-            margin-bottom: 2rem;
-            border: 1px solid var(--border-color);
-        }
-
-        #import-data {
-            display: none;
-        }
-
-        .form-control, .form-select {
-            border-radius: 0.5rem;
-            border: 1px solid #cbd5e1;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px var(--shadow-color);
-        }
-
-        .btn {
-            border-radius: 0.5rem;
-            font-weight: 600;
-            padding: 0.6rem 1.2rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: none;
-        }
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .btn-primary {
-            background: linear-gradient(45deg, var(--primary-color), #6366f1);
-            color: white;
-        }
-        .btn-secondary {
-            background-color: #e2e8f0;
-            color: var(--heading-color);
-        }
-        .btn-danger {
-            background: linear-gradient(45deg, #ef4444, #f87171);
-            color: white;
-        }
-
-        .table {
-            background-color: white;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .table thead {
-            background-color: #f1f5f9;
-        }
-        .table th {
-            color: var(--heading-color);
-            font-weight: 600;
-        }
-
-        .balance-owed { color: #ef4444; font-weight: 600; }
-        .balance-extra { color: #22c55e; font-weight: 600; }
-    </style>
-    <!-- PDF Generation Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf-autotable.min.js"></script>
-</head>
-<body>
-    <!-- Authentication Page -->
-    <div id="auth-container" class="page active">
-        <div class="auth-card">
-            <!-- Login Form -->
-            <form id="login-form">
-                <h2 class="text-center mb-4">Welcome Back!</h2>
-                <div class="mb-3">
-                    <label for="login-email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="login-email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="login-password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="login-password" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 mt-3">Login</button>
-                <p class="text-center mt-3 text-muted">
-                    Don't have an account? <a href="#" id="show-signup">Sign up</a>
-                </p>
-            </form>
-
-            <!-- Signup Form -->
-            <form id="signup-form">
-                <h2 class="text-center mb-4">Create Account</h2>
-                <div class="mb-3">
-                    <label for="signup-name" class="form-label">Full Name</label>
-                    <input type="text" class="form-control" id="signup-name" required>
-                </div>
-                <div class="mb-3">
-                    <label for="signup-email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" id="signup-email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="signup-password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="signup-password" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 mt-3">Sign Up</button>
-                <p class="text-center mt-3 text-muted">
-                    Already have an account? <a href="#" id="show-login">Log in</a>
-                </p>
-            </form>
-        </div>
-    </div>
-
-    <!-- Main Application Container -->
-    <div id="app-container" class="page">
-        <nav class="navbar navbar-expand-lg sticky-top">
-            <div class="container">
-                <a class="navbar-brand" href="#">
-                    <i class="bi bi-card-checklist"></i> MessTracker Lite
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#" data-page="dashboard">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-page="members">Members</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-page="expenses">Expenses</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" data-page="meals">Meals</a>
-                        </li>
-                         <li class="nav-item">
-                            <a class="nav-link" href="#" data-page="reports">Reports</a>
-                        </li>
-                    </ul>
-                    <div class="d-flex">
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-gear-fill"></i> Actions
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
-                                <li><button class="dropdown-item" id="export-data-btn"><i class="bi bi-file-earmark-pdf me-2"></i> Export Report (PDF)</button></li>
-                                <li><button class="dropdown-item" id="import-data-btn-visible"><i class="bi bi-upload me-2"></i> Import Data</button></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><button class="dropdown-item text-danger" id="reset-data-btn"><i class="bi bi-trash me-2"></i> Reset All Data</button></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><button class="dropdown-item" id="logout-btn"><i class="bi bi-box-arrow-right me-2"></i> Logout</button></li>
-                            </ul>
-                            <input type="file" id="import-data" accept=".json">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
-        <main class="container mt-4 mb-5">
-            <!-- Dashboard Page -->
-            <div id="dashboard" class="page active">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                     <h2 class="mb-0">Dashboard</h2>
-                     <span class="text-muted fs-6" id="dashboard-month-label"></span>
-                </div>
-                <div class="row g-4">
-                    <div class="col-md-6 col-xl-3">
-                        <div class="card h-100">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="card-title text-muted">Total Members</h5>
-                                    <p class="card-text fs-2 fw-bold" id="total-members-stat">0</p>
-                                </div>
-                                <i class="bi bi-people-fill stat-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-xl-3">
-                        <div class="card h-100">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="card-title text-muted">Total Expenses</h5>
-                                    <p class="card-text fs-2 fw-bold" id="total-expenses-stat">৳0</p>
-                                </div>
-                                <i class="bi bi-cart-check-fill stat-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-xl-3">
-                        <div class="card h-100">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="card-title text-muted">Total Meals</h5>
-                                    <p class="card-text fs-2 fw-bold" id="total-meals-stat">0</p>
-                                </div>
-                                <i class="bi bi-egg-fried stat-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-xl-3">
-                        <div class="card h-100 bg-primary">
-                            <div class="card-body d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="card-title">Meal Rate</h5>
-                                    <p class="card-text fs-2 fw-bold" id="meal-rate-stat">৳0.00</p>
-                                </div>
-                                <i class="bi bi-graph-up-arrow stat-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Members Page -->
-            <div id="members" class="page">
-                <h2 class="mb-4">Manage Members</h2>
-                <div class="form-section">
-                    <h4 id="member-form-title" class="mb-3">Add New Member</h4>
-                    <form id="member-form">
-                        <input type="hidden" id="member-id">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="member-name" class="form-label">Member Name</label>
-                                <input type="text" class="form-control" id="member-name" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="member-join-date" class="form-label">Join Date</label>
-                                <input type="date" class="form-control" id="member-join-date" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="member-leave-date" class="form-label">Leave Date (Optional)</label>
-                                <input type="date" class="form-control" id="member-leave-date">
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-primary">Save Member</button>
-                            <button type="button" class="btn btn-secondary" id="cancel-member-edit-btn" style="display: none;">Cancel Edit</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Join Date</th>
-                                <th>Leave Date</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="members-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Expenses Page -->
-            <div id="expenses" class="page">
-                <h2 class="mb-4">Track Expenses</h2>
-                <div class="form-section">
-                    <h4 id="expense-form-title" class="mb-3">Add New Expense</h4>
-                    <form id="expense-form">
-                        <input type="hidden" id="expense-id">
-                        <div class="row g-3">
-                            <div class="col-md-3">
-                                <label for="expense-date" class="form-label">Date</label>
-                                <input type="date" class="form-control" id="expense-date" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="expense-amount" class="form-label">Amount (৳)</label>
-                                <input type="number" class="form-control" id="expense-amount" step="0.01" min="0" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="expense-paid-by" class="form-label">Paid By</label>
-                                <select id="expense-paid-by" class="form-select" required></select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="expense-description" class="form-label">Description</label>
-                                <input type="text" class="form-control" id="expense-description" required>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-primary">Save Expense</button>
-                            <button type="button" class="btn btn-secondary" id="cancel-expense-edit-btn" style="display: none;">Cancel Edit</button>
-                        </div>
-                    </form>
-                </div>
-                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Paid By</th>
-                                <th>Amount</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="expenses-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Meals Page -->
-            <div id="meals" class="page">
-                <h2 class="mb-4">Daily Meal Entry</h2>
-                <div class="form-section">
-                     <h4 id="meal-form-title" class="mb-3">Add/Update Meal</h4>
-                    <form id="meal-form">
-                        <input type="hidden" id="meal-entry-id">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                 <label for="meal-date" class="form-label">Date</label>
-                                 <input type="date" class="form-control" id="meal-date" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="meal-member-select" class="form-label">Member</label>
-                                <select id="meal-member-select" class="form-select" required></select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="meal-count" class="form-label">Meal Count</label>
-                                <input type="number" min="0" class="form-control" id="meal-count" required>
-                            </div>
-                        </div>
-                        <div class="mt-4">
-                             <button type="submit" class="btn btn-primary">Save Meal</button>
-                             <button type="button" class="btn btn-secondary" id="cancel-meal-edit-btn" style="display: none;">Cancel Edit</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="table-responsive">
-                     <table class="table table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Member Name</th>
-                                <th>Meal Count</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="meals-table-body"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Reports Page -->
-            <div id="reports" class="page">
-                <h2 class="mb-4">Member Summary Report</h2>
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle">
-                        <thead>
-                            <tr>
-                                <th>Member Name</th>
-                                <th>Total Meals</th>
-                                <th>Total Paid (৳)</th>
-                                <th>Total Cost (৳)</th>
-                                <th>Balance (Owes / Extra) (৳)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reports-table-body"></tbody>
-                        <tfoot id="reports-table-footer" class="table-group-divider fw-bold"></tfoot>
-                    </table>
-                </div>
-            </div>
-
-        </main>
-        
-        <footer class="container text-center text-muted py-4">
-            <p>&copy; 2025 MessTracker Lite. All data is stored locally in your browser.</p>
-        </footer>
-    </div>
-
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- PeerJS for WebRTC -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-
-        // --- AUTHENTICATION LOGIC ---
-        const authContainer = document.getElementById('auth-container');
-        const appContainer = document.getElementById('app-container');
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        const showSignupBtn = document.getElementById('show-signup');
-        const showLoginBtn = document.getElementById('show-login');
-        const logoutBtn = document.getElementById('logout-btn');
-
-        const checkAuth = () => {
-            if (localStorage.getItem('isLoggedIn') === 'true') {
-                authContainer.classList.remove('active');
-                appContainer.classList.add('active');
-                initializeMainApp();
-            } else {
-                authContainer.classList.add('active');
-                appContainer.classList.remove('active');
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
             }
-        };
+        }
+    </script>
+    <style>
+        /* Video element er custom styling */
+        .mirror-video {
+            transform: scaleX(-1);
+        }
+        .unmirrored {
+            transform: scaleX(1) !important;
+        }
+        #local-video {
+            object-fit: cover;
+            transform: scaleX(-1);
+            transition: all 0.3s ease;
+        }
+        /* Custom scrollbar design */
+        .hide-scroll::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+            display: none;
+        }
+        .hide-scroll {
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+        /* Glassmorphism effects */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+        .glass-panel-dark {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        /* Chat bubble styling */
+        .chat-bubble-me {
+            background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble-them {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom-left-radius: 4px;
+        }
+        input:focus {
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans h-screen overflow-hidden selection:bg-indigo-200 overscroll-none">
 
-        showSignupBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginForm.style.display = 'none';
-            signupForm.style.display = 'block';
-        });
+    <!-- Toast Notification (Message Alert) -->
+    <div id="toast" class="fixed top-8 left-1/2 transform -translate-x-1/2 glass-panel-dark text-white px-5 py-3 sm:px-6 sm:py-3.5 rounded-full shadow-2xl z-[100] transition-all duration-400 opacity-0 pointer-events-none translate-y-[-20px] flex items-center gap-2 sm:gap-3 border border-white/10 w-[90%] max-w-sm sm:max-w-max">
+        <i class="fas fa-check-circle text-indigo-400 text-base sm:text-lg shrink-0"></i>
+        <span id="toast-message" class="font-medium text-sm tracking-wide truncate">Message</span>
+    </div>
 
-        showLoginBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            signupForm.style.display = 'none';
-            loginForm.style.display = 'block';
-        });
-
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            // This is a simulated login. In a real app, you would send a request to a server.
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            if (email && password) {
-                localStorage.setItem('isLoggedIn', 'true');
-                checkAuth();
-            } else {
-                alert('Please enter email and password.');
-            }
-        });
-
-        signupForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            // This is a simulated signup.
-            const name = document.getElementById('signup-name').value;
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            if (name && email && password) {
-                localStorage.setItem('isLoggedIn', 'true');
-                checkAuth();
-            } else {
-                alert('Please fill all fields.');
-            }
-        });
+    <!-- SETUP SCREEN (Landing Page / Home) -->
+    <div id="setup-screen" class="h-full flex flex-col items-center justify-center p-4 sm:p-6 transition-all duration-500 relative overflow-x-hidden overflow-y-auto bg-gradient-to-br from-indigo-50 via-white to-purple-50">
         
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('isLoggedIn');
-            window.location.reload();
-        });
+        <!-- Language Toggle Button -->
+        <div class="absolute top-4 right-4 sm:top-6 sm:right-6 z-50">
+            <button onclick="toggleLanguage()" class="glass-panel text-slate-700 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-bold tracking-widest flex items-center gap-2 hover:bg-white transition-colors shadow-sm cursor-pointer active:scale-95">
+                <i class="fas fa-language text-indigo-500 text-sm sm:text-base"></i> <span id="lang-toggle-text">বাংলা / EN</span>
+            </button>
+        </div>
 
+        <!-- Decorative Background Elements -->
+        <div class="absolute top-[0%] left-[-5%] w-[20rem] h-[20rem] sm:w-[40rem] sm:h-[40rem] bg-indigo-200 rounded-full mix-blend-multiply filter blur-[70px] sm:blur-[100px] opacity-40 animate-pulse-slow"></div>
+        <div class="absolute bottom-[-10%] right-[-5%] w-[20rem] h-[20rem] sm:w-[40rem] sm:h-[40rem] bg-fuchsia-200 rounded-full mix-blend-multiply filter blur-[70px] sm:blur-[100px] opacity-40 animate-pulse-slow" style="animation-delay: 2s;"></div>
+        <div class="absolute top-[20%] right-[10%] sm:right-[20%] w-32 h-32 sm:w-64 sm:h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-[50px] sm:blur-[80px] opacity-50 animate-float"></div>
 
-        // --- MAIN APPLICATION LOGIC ---
-        let appData = {};
-        let editingItemId = null;
-        
-        const DB_KEY = 'messTrackerLiteData';
-        
-        const getEmptyData = () => ({
-            members: [],
-            expenses: [],
-            meals: []
-        });
+        <div class="text-center mt-12 sm:mt-0 mb-6 sm:mb-10 relative z-10 animate-float" style="animation-duration: 8s;">
+            <div class="inline-flex items-center justify-center w-16 h-16 sm:w-24 sm:h-24 rounded-[1.5rem] sm:rounded-[2rem] bg-gradient-to-br from-indigo-500 to-blue-600 text-white mb-4 sm:mb-6 shadow-xl sm:shadow-2xl shadow-indigo-500/40 transform rotate-3 hover:rotate-0 transition-transform duration-500 border border-white/20">
+                <i class="fas fa-video text-3xl sm:text-5xl"></i>
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-800 mb-2 sm:mb-4 pb-1">QuickMeet</h1>
+            <p class="text-slate-500 max-w-[280px] sm:max-w-md mx-auto text-sm sm:text-lg font-medium leading-relaxed" data-i18n="app_desc">Secure, high-quality group video calls right in your browser. Connect with up to 20 people instantly.</p>
+        </div>
 
-        const saveData = () => {
-            localStorage.setItem(DB_KEY, JSON.stringify(appData));
-        };
-
-        const loadData = () => {
-            const data = localStorage.getItem(DB_KEY);
-            if (data) {
-                appData = JSON.parse(data);
-            } else {
-                appData = getEmptyData();
-                saveData();
-            }
-        };
-
-        const getMemberName = (id) => {
-            const member = appData.members.find(m => m.id == id);
-            return member ? member.name : 'N/A';
-        };
-
-        const formatCurrency = (amount) => `৳${amount.toFixed(2)}`;
-        
-        const getActiveMembersForDate = (date) => {
-            if (!date) return [];
-            const checkDate = new Date(date);
-            return appData.members.filter(m => {
-                const joinDate = new Date(m.joinDate);
-                const leaveDate = m.leaveDate ? new Date(m.leaveDate) : null;
-                const joined = joinDate <= checkDate;
-                const notLeft = !leaveDate || checkDate <= leaveDate;
-                return joined && notLeft;
-            });
-        };
-
-        const renderAll = () => {
-            const mealDate = document.getElementById('meal-date').value;
-            populateMemberDropdowns(mealDate);
-            renderDashboard();
-            renderMembers();
-            renderExpenses();
-            renderMeals();
-            renderReports();
-        };
-        
-        const populateMemberDropdowns = (date) => {
-            const expensePaidBySelect = document.getElementById('expense-paid-by');
-            const mealMemberSelect = document.getElementById('meal-member-select');
+        <div class="glass-panel p-5 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] w-full max-w-[440px] relative z-10 mb-8 sm:mb-0 shadow-[0_8px_30px_rgb(0,0,0,0.06)]">
             
-            const activeMembers = getActiveMembersForDate(date);
+            <!-- Camera Preview Box -->
+            <div class="relative w-full aspect-video bg-slate-900 rounded-2xl sm:rounded-3xl overflow-hidden mb-6 sm:mb-8 shadow-inner border-[3px] sm:border-[4px] border-white/60 group">
+                <video id="preview-video" class="w-full h-full object-cover transform scale-x-[-1] transition-transform duration-700 group-hover:scale-105" autoplay muted playsinline></video>
+                <div id="preview-overlay" class="absolute inset-0 flex flex-col items-center justify-center text-white bg-slate-900/80 backdrop-blur-md transition-opacity duration-300">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 border-4 border-indigo-400 border-t-transparent rounded-full animate-spin mb-3 sm:mb-4 shadow-[0_0_15px_rgba(99,102,241,0.5)]"></div>
+                    <span class="text-xs sm:text-sm font-semibold tracking-wider uppercase text-indigo-200" data-i18n="accessing_camera">Accessing Camera</span>
+                </div>
+            </div>
 
-            const expenseSelected = expensePaidBySelect.value;
-            const mealSelected = mealMemberSelect.value;
+            <div class="space-y-4 sm:space-y-5">
+                <!-- User Name Input Field -->
+                <div class="relative w-full group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-indigo-500">
+                        <i class="fas fa-user text-slate-400 group-focus-within:text-indigo-500 transition-colors"></i>
+                    </div>
+                    <!-- text-base on mobile to prevent iOS Safari auto-zoom -->
+                    <input type="text" id="user-name-input" data-i18n-placeholder="name_placeholder" placeholder="What's your name?" class="w-full bg-white/60 border border-white text-slate-800 text-base sm:text-sm font-medium rounded-xl sm:rounded-2xl block pl-10 sm:pl-12 p-3.5 sm:p-4 outline-none transition-all placeholder-slate-400 focus:bg-white hover:bg-white/80">
+                </div>
 
-            expensePaidBySelect.innerHTML = '<option value="">Select Member</option>';
-            mealMemberSelect.innerHTML = '<option value="">Select Member</option>';
+                <!-- Create Meeting Button -->
+                <button onclick="createRoom()" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold py-3.5 sm:py-4 px-4 rounded-xl sm:rounded-2xl transition-all duration-300 transform hover:-translate-y-1 active:scale-95 hover:shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base">
+                    <i class="fas fa-video text-base sm:text-lg"></i> <span data-i18n="new_meeting_btn">Start New Meeting</span>
+                </button>
+                
+                <div class="relative flex items-center py-1 sm:py-2">
+                    <div class="flex-grow border-t border-slate-200"></div>
+                    <span class="flex-shrink-0 mx-3 sm:mx-4 text-slate-400 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest" data-i18n="or_join">Or join existing</span>
+                    <div class="flex-grow border-t border-slate-200"></div>
+                </div>
 
-            activeMembers.forEach(member => {
-                const option = `<option value="${member.id}">${member.name}</option>`;
-                expensePaidBySelect.innerHTML += option;
-                mealMemberSelect.innerHTML += option;
-            });
-            expensePaidBySelect.value = expenseSelected;
-            mealMemberSelect.value = mealSelected;
-        };
+                <!-- Join Meeting Row -->
+                <div class="flex gap-2 sm:gap-3 flex-col sm:flex-row">
+                    <div class="relative flex-grow group">
+                        <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-link text-slate-400 group-focus-within:text-indigo-500 transition-colors text-sm sm:text-base"></i>
+                        </div>
+                        <input type="text" id="join-id-input" data-i18n-placeholder="link_placeholder" placeholder="Paste link or ID" class="w-full bg-white/60 border border-white text-slate-800 text-base sm:text-sm font-medium rounded-xl sm:rounded-2xl block pl-9 sm:pl-12 p-3.5 sm:p-4 outline-none transition-all placeholder-slate-400 focus:bg-white hover:bg-white/80">
+                    </div>
+                    <button onclick="joinRoom()" class="w-full sm:w-auto bg-white hover:bg-slate-50 text-indigo-600 font-bold py-3.5 sm:py-4 px-6 sm:px-8 rounded-xl sm:rounded-2xl transition-all duration-300 border border-white shadow-sm hover:shadow-md transform hover:-translate-y-1 active:scale-95 text-sm sm:text-base flex items-center justify-center">
+                        <span data-i18n="join_btn">Join</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <p class="mt-2 sm:mt-8 mb-4 sm:mb-0 text-xs sm:text-sm text-slate-400 font-medium relative z-10 text-center" data-i18n="no_signup">No sign-ups required. 100% Peer-to-Peer.</p>
+    </div>
 
-        const renderDashboard = () => {
-            const now = new Date();
-            const currentYear = now.getFullYear();
-            const currentMonth = now.getMonth();
+    <!-- CALL SCREEN (Main Meeting Room) -->
+    <div id="call-screen" class="h-full w-full bg-[#0a0a0a] relative hidden overflow-hidden font-sans">
+        
+        <!-- Main Video Area (Grid) -->
+        <div class="absolute inset-0 flex flex-col items-center transition-all duration-500" id="video-area">
             
-            const monthName = now.toLocaleString('default', { month: 'long' });
-            document.getElementById('dashboard-month-label').textContent = `${monthName} ${currentYear}`;
+            <!-- Floating Top Bar (Room Info) -->
+            <div class="absolute top-3 left-3 right-3 sm:top-6 sm:left-6 sm:right-6 flex justify-between items-start z-30 pointer-events-none transition-all duration-300" id="top-bar">
+                <div class="glass-panel-dark px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl sm:rounded-2xl flex items-center gap-2 sm:gap-3 shadow-xl pointer-events-auto shrink-0">
+                    <div class="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </div>
+                    <span class="text-white font-semibold text-[10px] sm:text-xs tracking-wider uppercase hidden sm:inline-block" data-i18n="secure_call">Secure</span>
+                </div>
+                
+                <!-- Room ID / Link Display Button -->
+                <div id="room-info" class="hidden items-center glass-panel-dark rounded-xl sm:rounded-2xl pr-1.5 pl-3 sm:pr-2 sm:pl-6 py-1.5 sm:py-2 shadow-xl group transition-all pointer-events-auto hover:bg-slate-800/80 cursor-pointer active:scale-95 max-w-[65%] sm:max-w-none" onclick="copyRoomLink()">
+                    <div class="flex flex-col items-start mr-2 sm:mr-4 overflow-hidden w-full">
+                        <span class="text-slate-400 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest mb-0.5 hidden sm:block" data-i18n="meeting_link">Meeting Link</span>
+                        <span id="display-room-id" class="text-white font-mono text-[11px] sm:text-sm tracking-wider select-all truncate w-full text-left">...</span>
+                    </div>
+                    <button class="w-8 h-8 sm:w-10 sm:h-10 shrink-0 flex items-center justify-center bg-white/10 group-hover:bg-indigo-500 rounded-lg sm:rounded-xl text-white transition-all duration-300" data-i18n-title="copy_link_tooltip" title="Copy Meeting Link">
+                        <i class="fas fa-copy text-xs sm:text-base"></i>
+                    </button>
+                </div>
+            </div>
 
-            const membersThisMonth = appData.members.filter(m => {
-                const joinDate = new Date(m.joinDate);
-                const leaveDate = m.leaveDate ? new Date(m.leaveDate) : null;
-                const joinedInOrBeforeMonth = joinDate.getFullYear() < currentYear || (joinDate.getFullYear() === currentYear && joinDate.getMonth() <= currentMonth);
-                const leftInOrAfterMonth = !leaveDate || leaveDate.getFullYear() > currentYear || (leaveDate.getFullYear() === currentYear && leaveDate.getMonth() >= currentMonth);
-                return joinedInOrBeforeMonth && leftInOrAfterMonth;
-            });
+            <!-- Waiting Message (Empty State when alone) -->
+            <div id="waiting-message" class="absolute inset-0 flex flex-col items-center justify-center z-20 hidden backdrop-blur-sm pointer-events-none p-4 mt-10 sm:mt-0">
+                <div class="glass-panel-dark p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] text-center shadow-2xl w-full max-w-[90%] sm:max-w-md border border-white/5 relative overflow-hidden pointer-events-auto transform transition-all hover:scale-[1.02]">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 sm:w-48 sm:h-48 bg-indigo-500 rounded-full filter blur-[50px] sm:blur-[70px] opacity-20"></div>
 
-            const expensesThisMonth = appData.expenses.filter(e => {
-                const expenseDate = new Date(e.date);
-                return expenseDate.getFullYear() === currentYear && expenseDate.getMonth() === currentMonth;
-            });
+                    <div class="w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full flex items-center justify-center mx-auto mb-6 sm:mb-8 border border-white/10 shadow-inner relative">
+                        <div class="absolute inset-0 rounded-full border border-indigo-500/30 animate-ping" style="animation-duration: 3s;"></div>
+                        <i class="fas fa-user-plus text-2xl sm:text-4xl text-indigo-400"></i>
+                    </div>
+                    <h2 class="text-xl sm:text-3xl font-bold text-white mb-2 sm:mb-3 tracking-tight" data-i18n="only_one_here">You're the only one here</h2>
+                    <p class="text-slate-400 mb-6 sm:mb-8 text-xs sm:text-sm leading-relaxed px-1 sm:px-4" data-i18n="share_link_desc">Share the meeting link below with the people you want to meet. Up to 20 users can join this secure room.</p>
+                    
+                    <div class="bg-black/50 rounded-xl sm:rounded-2xl p-4 sm:p-5 border border-white/5 group cursor-pointer hover:bg-indigo-500/10 hover:border-indigo-500/30 transition-all duration-300 active:scale-95" onclick="copyRoomLink()">
+                        <div class="text-[9px] sm:text-[10px] text-indigo-400 font-bold uppercase tracking-widest mb-1.5 sm:mb-2 flex items-center gap-1.5 sm:gap-2">
+                            <i class="fas fa-link"></i> <span data-i18n="click_to_copy">Click to copy link</span>
+                        </div>
+                        <div class="flex items-center justify-between overflow-hidden">
+                            <span id="waiting-room-id" class="text-white font-mono text-xs sm:text-sm truncate mr-2 sm:mr-3 font-semibold tracking-wide"></span>
+                            <i class="fas fa-copy text-slate-500 group-hover:text-indigo-400 transition-colors text-base sm:text-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            const mealsThisMonth = appData.meals.filter(m => {
-                const mealDate = new Date(m.date);
-                return mealDate.getFullYear() === currentYear && mealDate.getMonth() === currentMonth;
-            });
+            <!-- Remote Videos Grid Container -->
+            <!-- pb-[120px] ensures videos don't hide behind the control pill on mobile -->
+            <div id="video-grid" class="w-full h-full p-3 sm:p-6 pt-20 sm:pt-28 pb-[120px] sm:pb-36 gap-2 sm:gap-6 grid place-items-center transition-all duration-500 ease-in-out custom-scroll overflow-y-auto">
+                <!-- User video elements will be dynamically injected here -->
+            </div>
+
+            <!-- Local Video (PiP - Picture in Picture) -->
+            <!-- Position adjusted for mobile so it doesn't block the bottom controls -->
+            <div id="local-video-container" class="absolute bottom-[90px] sm:bottom-36 right-3 sm:right-8 w-[100px] h-[140px] sm:w-48 sm:h-auto md:w-64 aspect-[3/4] sm:aspect-video bg-slate-900 rounded-xl sm:rounded-3xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.6)] border border-white/10 z-40 cursor-move group transition-all duration-500 hover:scale-[1.02] hover:shadow-indigo-500/20">
+                <video id="local-video" class="w-full h-full object-cover" autoplay muted playsinline></video>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute bottom-1.5 left-1.5 sm:bottom-3 sm:left-3 flex gap-1 sm:gap-2">
+                    <div id="local-mic-indicator" class="glass-panel-dark px-1.5 py-1 sm:px-2.5 sm:py-1.5 rounded-md sm:rounded-xl hidden shadow-lg border border-red-500/30 backdrop-blur-md">
+                        <i class="fas fa-microphone-slash text-red-400 text-[8px] sm:text-xs"></i>
+                    </div>
+                </div>
+                <div class="absolute top-1.5 right-1.5 sm:top-3 sm:right-3 glass-panel-dark px-1.5 py-0.5 sm:px-3 sm:py-1 rounded-md sm:rounded-xl text-[8px] sm:text-[10px] font-bold text-white uppercase tracking-wider backdrop-blur-md" data-i18n="you_label">You</div>
+            </div>
+
+            <!-- Floating Controls Pill (Bottom Bar) -->
+            <div class="absolute bottom-4 sm:bottom-8 w-full px-3 flex justify-center z-50 pointer-events-none">
+                <!-- Wrapper for horizontal scroll on very tiny screens -->
+                <div class="max-w-full glass-panel-dark rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.6)] border border-white/10 backdrop-blur-xl pointer-events-auto">
+                    <div class="flex items-center gap-1.5 sm:gap-3 px-2 py-2 sm:px-5 sm:py-3 overflow-x-auto hide-scroll">
+                        
+                        <!-- Mic Toggle -->
+                        <button id="btn-mic" onclick="toggleMic()" class="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all duration-300 shadow-lg group relative overflow-hidden shrink-0 active:scale-95" style="touch-action: manipulation;">
+                            <span class="absolute inset-0 bg-white/5 transform scale-0 group-hover:scale-100 rounded-full transition-transform duration-300 origin-center"></span>
+                            <i class="fas fa-microphone text-sm sm:text-xl group-hover:-translate-y-0.5 transition-transform relative z-10"></i>
+                        </button>
+                        
+                        <!-- Camera Toggle -->
+                        <button id="btn-video" onclick="toggleVideo()" class="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all duration-300 shadow-lg group relative overflow-hidden shrink-0 active:scale-95" style="touch-action: manipulation;">
+                            <span class="absolute inset-0 bg-white/5 transform scale-0 group-hover:scale-100 rounded-full transition-transform duration-300 origin-center"></span>
+                            <i class="fas fa-video text-sm sm:text-xl group-hover:-translate-y-0.5 transition-transform relative z-10"></i>
+                        </button>
+
+                        <!-- Screen Share Toggle (Visible on mobile too if supported) -->
+                        <button id="btn-screen" onclick="toggleScreenShare()" class="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all duration-300 shadow-lg group relative overflow-hidden shrink-0 active:scale-95" style="touch-action: manipulation;">
+                            <span class="absolute inset-0 bg-white/5 transform scale-0 group-hover:scale-100 rounded-full transition-transform duration-300 origin-center"></span>
+                            <i class="fas fa-desktop text-sm sm:text-xl group-hover:-translate-y-0.5 transition-transform relative z-10"></i>
+                        </button>
+                        
+                        <div class="w-px h-6 sm:h-8 bg-white/10 mx-0.5 sm:mx-1 shrink-0"></div>
+
+                        <!-- Participants Toggle -->
+                        <button id="btn-participants" onclick="toggleSidebar('participants')" class="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all duration-300 shadow-lg group relative overflow-hidden shrink-0 active:scale-95" style="touch-action: manipulation;">
+                            <span class="absolute inset-0 bg-white/5 transform scale-0 group-hover:scale-100 rounded-full transition-transform duration-300 origin-center"></span>
+                            <i class="fas fa-users text-sm sm:text-xl group-hover:-translate-y-0.5 transition-transform relative z-10"></i>
+                            <span id="participants-badge" class="absolute top-0 right-0 sm:top-1 sm:right-1 bg-indigo-500 text-white text-[8px] sm:text-[10px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shadow-md border-2 border-slate-900 hidden z-20 transition-all duration-300">1</span>
+                        </button>
+                        
+                        <!-- Chat Toggle -->
+                        <button id="btn-chat" onclick="toggleSidebar('chat')" class="w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all duration-300 shadow-lg group relative overflow-hidden shrink-0 active:scale-95" style="touch-action: manipulation;">
+                            <span class="absolute inset-0 bg-white/5 transform scale-0 group-hover:scale-100 rounded-full transition-transform duration-300 origin-center"></span>
+                            <i class="fas fa-comment-dots text-sm sm:text-xl group-hover:-translate-y-0.5 transition-transform relative z-10"></i>
+                            <span id="chat-badge" class="absolute top-0 right-0 sm:top-1 sm:right-1 bg-rose-500 text-white text-[8px] sm:text-[10px] font-bold w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shadow-md border-2 border-slate-900 hidden z-20 animate-bounce">!</span>
+                        </button>
+                        
+                        <div class="w-px h-6 sm:h-8 bg-white/10 mx-0.5 sm:mx-1 shrink-0"></div>
+                        
+                        <!-- End Call -->
+                        <button onclick="endCall()" class="w-14 h-11 sm:w-20 sm:h-14 rounded-[1.2rem] sm:rounded-[1.5rem] bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center transition-all duration-300 shadow-[0_0_15px_rgba(244,63,94,0.4)] hover:shadow-[0_0_30px_rgba(244,63,94,0.6)] group shrink-0 active:scale-95" style="touch-action: manipulation;">
+                            <i class="fas fa-phone-slash text-sm sm:text-xl group-hover:scale-110 transition-transform"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar (Chat & Participants) -->
+        <!-- Fixed full screen on mobile, right panel on desktop -->
+        <div id="sidebar" class="fixed inset-y-0 right-0 w-full sm:w-[380px] glass-panel-dark sm:border-l border-white/5 flex flex-col transition-transform duration-500 transform translate-x-full z-[90] shadow-[-10px_0_30px_rgba(0,0,0,0.4)] backdrop-blur-3xl">
             
-            const totalExpenses = expensesThisMonth.reduce((sum, e) => sum + parseFloat(e.amount), 0);
-            const totalMeals = mealsThisMonth.reduce((sum, day) => sum + Object.values(day.counts).reduce((dsum, count) => dsum + count, 0), 0);
-            const mealRate = totalMeals > 0 ? totalExpenses / totalMeals : 0;
+            <!-- Sidebar Header -->
+            <div class="p-4 sm:p-5 border-b border-white/5 flex justify-between items-center bg-white/5">
+                <h3 id="sidebar-title" class="text-white font-bold text-base sm:text-lg tracking-wide" data-i18n="chat_title">Chat</h3>
+                <button onclick="closeSidebar()" class="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all active:scale-90 shadow-sm border border-white/5">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
 
-            document.getElementById('total-members-stat').textContent = membersThisMonth.length;
-            document.getElementById('total-expenses-stat').textContent = formatCurrency(totalExpenses);
-            document.getElementById('total-meals-stat').textContent = totalMeals;
-            document.getElementById('meal-rate-stat').textContent = formatCurrency(mealRate);
+            <!-- Chat Content -->
+            <div id="chat-content" class="flex-grow flex flex-col hidden h-full">
+                <div id="chat-messages" class="flex-grow overflow-y-auto p-4 sm:p-5 space-y-4 custom-scroll flex flex-col">
+                    <div class="text-center bg-white/5 rounded-2xl py-3 px-4 mx-auto border border-white/5">
+                        <i class="fas fa-lock text-indigo-400 mb-2 text-base sm:text-lg"></i>
+                        <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium leading-relaxed" data-i18n="secure_chat_welcome">Welcome to secure chat.<br>Messages are end-to-end encrypted and disappear when the call ends.</p>
+                    </div>
+                </div>
+                <div class="p-3 sm:p-5 border-t border-white/5 bg-slate-900/50 backdrop-blur-xl">
+                    <form id="chat-form" onsubmit="sendChatMessage(event)" class="flex gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/10 focus-within:border-indigo-500/50 transition-colors">
+                        <input type="text" id="chat-input" data-i18n-placeholder="chat_placeholder" placeholder="Type a message..." class="flex-grow bg-transparent text-white text-base sm:text-sm rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 outline-none placeholder-slate-500" disabled>
+                        <button type="submit" id="chat-submit" class="bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl px-4 sm:px-5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-indigo-500/20 active:scale-95" disabled>
+                            <i class="fas fa-paper-plane text-xs sm:text-sm"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Participants Content -->
+            <div id="participants-content" class="flex-grow overflow-y-auto p-3 sm:p-5 custom-scroll hidden">
+                <div class="space-y-2 sm:space-y-3" id="participants-list">
+                    <!-- Participants will be dynamically generated -->
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        // --- Translation & i18n System (Bangla Latin / English) ---
+        const i18n = {
+            en: {
+                app_desc: "Secure, high-quality group video calls right in your browser. Connect with up to 20 people instantly.",
+                accessing_camera: "Accessing Camera",
+                name_placeholder: "What's your name?",
+                new_meeting_btn: "Start New Meeting",
+                or_join: "Or join existing",
+                link_placeholder: "Paste link or ID",
+                join_btn: "Join",
+                no_signup: "No sign-ups required. 100% Peer-to-Peer.",
+                secure_call: "Secure",
+                meeting_link: "Meeting Link",
+                copy_link_tooltip: "Copy Meeting Link",
+                only_one_here: "You're the only one here",
+                share_link_desc: "Share the meeting link below with the people you want to meet. Up to 20 users can join this secure room.",
+                click_to_copy: "Click to copy link",
+                you_label: "You",
+                chat_title: "Chat",
+                secure_chat_welcome: "Welcome to secure chat.<br>Messages are end-to-end encrypted and disappear when the call ends.",
+                chat_placeholder: "Type a message...",
+                meeting_host: "Meeting Host",
+                participant: "Participant",
+                in_call: "In Call",
+                allow_cam_mic: "Please allow camera/microphone access first.",
+                generating_link: "Generating Meeting Link...",
+                enter_id_link: "Please enter a Room ID or Link",
+                connecting_meeting: "Connecting to meeting...",
+                joining: "Joining...",
+                connecting: "Connecting...",
+                joined_room: "has joined the room.",
+                left_room: "left the room.",
+                meeting_not_found: "Meeting not found. The host may have ended it.",
+                conn_error: "Connection error occurred.",
+                camera_off: "Camera Off",
+                camera_unavailable: "Camera Unavailable",
+                share_screen_prompt: "Share your screen when someone joins!",
+                wait_for_chat: "Wait for someone to join before chatting.",
+                no_mic: "No physical microphone connected.",
+                no_cam: "No physical camera connected.",
+                mic_not_found: "No microphone available.",
+                cam_not_found: "No camera available.",
+                left_meeting: "You left the meeting.",
+                link_copied: "Meeting Link copied to clipboard!",
+                link_copy_failed: "Failed to copy link.",
+                guest: "Guest"
+            },
+            bn: {
+                app_desc: "ব্রাউজার থেকেই সুরক্ষিত, উচ্চ-মানের গ্রুপ ভিডিও কল। একসাথে ২০ জনের সাথে সংযুক্ত হোন।",
+                accessing_camera: "ক্যামেরা চালু হচ্ছে",
+                name_placeholder: "আপনার নাম কী?",
+                new_meeting_btn: "নতুন মিটিং শুরু করুন",
+                or_join: "অথবা অন্য মিটিংয়ে যোগ দিন",
+                link_placeholder: "লিঙ্ক বা আইডি পেস্ট করুন",
+                join_btn: "যোগ দিন",
+                no_signup: "কোনো সাইন-আপের প্রয়োজন নেই। ১০০% পিয়ার-টু-পিয়ার।",
+                secure_call: "নিরাপদ",
+                meeting_link: "মিটিং লিঙ্ক",
+                copy_link_tooltip: "মিটিং লিঙ্ক কপি করুন",
+                only_one_here: "এখানে শুধু আপনি আছেন",
+                share_link_desc: "যাদের সাথে মিটিং করতে চান, তাদের সাথে নিচের লিঙ্কটি শেয়ার করুন। এই সুরক্ষিত রুমে ২০ জন পর্যন্ত যোগ দিতে পারবেন।",
+                click_to_copy: "লিঙ্ক কপি করতে এখানে ক্লিক করুন",
+                you_label: "আপনি",
+                chat_title: "চ্যাট",
+                secure_chat_welcome: "সুরক্ষিত চ্যাটে স্বাগতম।<br>বার্তাগুলো এন্ড-টু-এন্ড এনক্রিপ্টেড এবং কল শেষ হলে মুছে যাবে।",
+                chat_placeholder: "একটি বার্তা লিখুন...",
+                meeting_host: "মিটিং হোস্ট",
+                participant: "অংশগ্রহণকারী",
+                in_call: "কলে আছেন",
+                allow_cam_mic: "দয়া করে ক্যামেরা/মাইক্রোফোনের অনুমতি দিন।",
+                generating_link: "মিটিং লিঙ্ক তৈরি হচ্ছে...",
+                enter_id_link: "দয়া করে একটি রুম আইডি বা লিঙ্ক দিন",
+                connecting_meeting: "মিটিংয়ে সংযুক্ত হচ্ছে...",
+                joining: "যোগ দিচ্ছে...",
+                connecting: "সংযুক্ত হচ্ছে...",
+                joined_room: "রুমে যোগ দিয়েছেন।",
+                left_room: "রুম থেকে বিদায় নিয়েছেন।",
+                meeting_not_found: "মিটিং খুঁজে পাওয়া যায়নি। হোস্ট হয়তো মিটিং শেষ করেছেন।",
+                conn_error: "সংযোগ ত্রুটি ঘটেছে।",
+                camera_off: "ক্যামেরা বন্ধ",
+                camera_unavailable: "ক্যামেরা পাওয়া যাচ্ছে না",
+                share_screen_prompt: "কেউ যোগ দিলে আপনার স্ক্রিন শেয়ার করুন!",
+                wait_for_chat: "চ্যাট করার জন্য কেউ যোগ দেওয়া পর্যন্ত অপেক্ষা করুন।",
+                no_mic: "কোনো ফিজিক্যাল মাইক্রোফোন সংযুক্ত নেই।",
+                no_cam: "কোনো ফিজিক্যাল ক্যামেরা সংযুক্ত নেই।",
+                mic_not_found: "কোনো মাইক্রোফোন পাওয়া যায়নি।",
+                cam_not_found: "কোনো ক্যামেরা পাওয়া যায়নি।",
+                left_meeting: "আপনি মিটিং থেকে বের হয়ে গেছেন।",
+                link_copied: "মিটিং লিঙ্ক ক্লিপবোর্ডে কপি করা হয়েছে!",
+                link_copy_failed: "লিঙ্ক কপি করতে ব্যর্থ হয়েছে।",
+                guest: "অতিথি"
+            }
         };
         
-        const renderMembers = () => {
-            const tableBody = document.getElementById('members-table-body');
-            tableBody.innerHTML = '';
-            if (appData.members.length === 0) {
-                 tableBody.innerHTML = '<tr><td colspan="4" class="text-center p-4">No members found. Add a new member to get started.</td></tr>';
-                 return;
-            }
-            appData.members.forEach(member => {
-                const row = `
-                    <tr>
-                        <td>${member.name}</td>
-                        <td>${member.joinDate}</td>
-                        <td>${member.leaveDate || 'N/A'}</td>
-                        <td class="text-end table-actions">
-                            <button class="btn btn-sm btn-outline-primary me-2" data-id="${member.id}" data-action="edit-member"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-outline-danger" data-id="${member.id}" data-action="delete-member"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-        };
+        let currentLang = 'en';
 
-        const renderExpenses = () => {
-            const tableBody = document.getElementById('expenses-table-body');
-            tableBody.innerHTML = '';
-            if (appData.expenses.length === 0) {
-                 tableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4">No expenses recorded.</td></tr>';
-                 return;
-            }
-            const sortedExpenses = [...appData.expenses].sort((a,b) => new Date(b.date) - new Date(a.date));
-            sortedExpenses.forEach(expense => {
-                const row = `
-                    <tr>
-                        <td>${expense.date}</td>
-                        <td>${expense.description}</td>
-                        <td>${getMemberName(expense.paidBy)}</td>
-                        <td>${formatCurrency(expense.amount)}</td>
-                        <td class="text-end table-actions">
-                            <button class="btn btn-sm btn-outline-primary me-2" data-id="${expense.id}" data-action="edit-expense"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-outline-danger" data-id="${expense.id}" data-action="delete-expense"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
+        function t(key) {
+            return i18n[currentLang][key] || key;
+        }
+
+        function updateLanguage() {
+            // Update simple text tags
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[currentLang][key]) {
+                    el.innerHTML = i18n[currentLang][key];
+                }
             });
-        };
-        
-        const renderMeals = () => {
-            const tableBody = document.getElementById('meals-table-body');
-            tableBody.innerHTML = '';
             
-            const allMealEntries = [];
-            appData.meals.forEach(day => {
-                for (const memberId in day.counts) {
-                    allMealEntries.push({
-                        id: `${day.date}_${memberId}`,
-                        date: day.date,
-                        memberId: memberId,
-                        count: day.counts[memberId]
-                    });
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (i18n[currentLang][key]) {
+                    el.placeholder = i18n[currentLang][key];
+                }
+            });
+            
+            // Update titles (tooltips)
+            document.querySelectorAll('[data-i18n-title]').forEach(el => {
+                const key = el.getAttribute('data-i18n-title');
+                if (i18n[currentLang][key]) {
+                    el.title = i18n[currentLang][key];
                 }
             });
 
-            if (allMealEntries.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="4" class="text-center p-4">No meals recorded.</td></tr>';
+            // Update toggle button text
+            document.getElementById('lang-toggle-text').innerText = currentLang === 'en' ? 'বাংলা' : 'English';
+
+            // Refresh UI components that use translated strings dynamically
+            if (activeRoomId) {
+                updateParticipantsList();
+                if (activeSidebar === 'participants') {
+                    const totalCount = Object.keys(peers).length + 1;
+                    ui.sidebarTitle.innerText = `${t('in_call')} (${totalCount})`;
+                } else if (activeSidebar === 'chat') {
+                    ui.sidebarTitle.innerText = t('chat_title');
+                }
+            }
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'bn' : 'en';
+            updateLanguage();
+        }
+
+        // --- Core State Variables ---
+        let peer = null;
+        let localStream = null;
+        
+        let isMicMuted = false;
+        let isCamOff = false;
+        let activeRoomId = ''; 
+        let isDummyStream = false;
+        let isScreenSharing = false;
+        let screenStream = null;
+        
+        let activeSidebar = null; 
+        let unreadMessages = 0;
+
+        let localUserName = '';
+
+        // MESH NETWORK STATE
+        const peers = {};
+
+        // --- DOM Elements ---
+        const screens = {
+            setup: document.getElementById('setup-screen'),
+            call: document.getElementById('call-screen')
+        };
+        const ui = {
+            previewVideo: document.getElementById('preview-video'),
+            localVideo: document.getElementById('local-video'),
+            videoGrid: document.getElementById('video-grid'),
+            previewOverlay: document.getElementById('preview-overlay'),
+            waitingMessage: document.getElementById('waiting-message'),
+            roomInfo: document.getElementById('room-info'),
+            displayRoomId: document.getElementById('display-room-id'),
+            waitingRoomId: document.getElementById('waiting-room-id'),
+            btnMic: document.getElementById('btn-mic'),
+            btnVideo: document.getElementById('btn-video'),
+            btnScreen: document.getElementById('btn-screen'),
+            localMicIndicator: document.getElementById('local-mic-indicator'),
+            sidebar: document.getElementById('sidebar'),
+            videoArea: document.getElementById('video-area'),
+            chatContent: document.getElementById('chat-content'),
+            participantsContent: document.getElementById('participants-content'),
+            sidebarTitle: document.getElementById('sidebar-title'),
+            chatMessages: document.getElementById('chat-messages'),
+            chatInput: document.getElementById('chat-input'),
+            chatSubmit: document.getElementById('chat-submit'),
+            chatBadge: document.getElementById('chat-badge'),
+            participantsBadge: document.getElementById('participants-badge'),
+            participantsList: document.getElementById('participants-list'),
+            userNameInput: document.getElementById('user-name-input')
+        };
+
+        // --- URL Parameter Parsing ---
+        function checkUrlParams() {
+            try {
+                if (window.location.protocol !== 'blob:') {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const roomToJoin = urlParams.get('room');
+                    if (roomToJoin) {
+                        document.getElementById('join-id-input').value = roomToJoin;
+                    }
+                }
+            } catch (e) {
+                console.warn("URL parameter check error", e);
+            }
+        }
+
+        // --- Initialization & Net Optimization ---
+
+        function createDummyStream() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 640;
+            canvas.height = 480;
+            const ctx = canvas.getContext('2d');
+            
+            setInterval(() => {
+                ctx.fillStyle = '#0f172a'; // slate-900
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#64748b'; // slate-500
+                ctx.font = '600 24px "Plus Jakarta Sans"';
+                ctx.textAlign = 'center';
+                ctx.fillText(t('camera_off'), canvas.width/2, canvas.height/2);
+                
+                const time = Date.now() / 1000;
+                const x = canvas.width/2 + Math.sin(time) * 50;
+                const y = canvas.height/2 + 40;
+                ctx.fillStyle = '#6366f1'; 
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, Math.PI*2);
+                ctx.fill();
+            }, 1000/15); 
+            
+            const videoStream = canvas.captureStream(15);
+            const tracks = [videoStream.getVideoTracks()[0]];
+            
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    const audioCtx = new AudioContext();
+                    const dest = audioCtx.createMediaStreamDestination();
+                    if (dest.stream.getAudioTracks().length > 0) {
+                        tracks.push(dest.stream.getAudioTracks()[0]);
+                    }
+                }
+            } catch (e) { console.warn("Could not create dummy audio track", e); }
+            
+            return new MediaStream(tracks);
+        }
+
+        async function initializeMedia() {
+            updateLanguage(); 
+            checkUrlParams(); 
+
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                console.warn("Media devices API not available.");
+                showToast(t('cam_not_found'));
+                setupDummyStreamFallback();
+            } else {
+                
+                // LOW BANDWIDTH OPTIMIZATION (Net Slow thakleo kaj korbe)
+                // Resolution 320x240 (240p) ebong 15 fps set kora hoyeche jate 20 jon eksathe call korleo lag na hoy.
+                const optimalConstraints = {
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    },
+                    video: {
+                        width: { max: 480, ideal: 320 },
+                        height: { max: 360, ideal: 240 },
+                        frameRate: { max: 15, ideal: 10 }
+                    }
+                };
+
+                try {
+                    localStream = await navigator.mediaDevices.getUserMedia(optimalConstraints);
+                } catch (err) {
+                    try {
+                        localStream = await navigator.mediaDevices.getUserMedia({ video: optimalConstraints.video, audio: false });
+                        isMicMuted = true;
+                        updateMicUI();
+                    } catch (err2) {
+                        try {
+                            localStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: optimalConstraints.audio });
+                            isCamOff = true;
+                            updateVideoUI();
+                        } catch (err3) {
+                            setupDummyStreamFallback();
+                        }
+                    }
+                }
+            }
+
+            if (localStream) {
+                ui.previewVideo.srcObject = localStream;
+                ui.localVideo.srcObject = localStream;
+                ui.previewOverlay.classList.add('opacity-0'); 
+                setTimeout(() => ui.previewOverlay.classList.add('hidden'), 300);
+            }
+        }
+
+        function setupDummyStreamFallback() {
+            try {
+                localStream = createDummyStream();
+                isDummyStream = true;
+                isCamOff = true;
+                isMicMuted = true;
+                updateVideoUI();
+                updateMicUI();
+            } catch (e) {
+                ui.previewOverlay.innerHTML = `<div class="w-10 h-10 sm:w-14 sm:h-14 bg-rose-500/20 rounded-full flex items-center justify-center mb-3 sm:mb-4"><i class="fas fa-video-slash text-xl sm:text-2xl text-rose-400"></i></div><span class="text-[10px] sm:text-xs font-bold tracking-wider uppercase text-rose-200">${t('camera_unavailable')}</span>`;
+            }
+        }
+
+        window.addEventListener('load', initializeMedia);
+
+        // --- Core WebRTC / PeerJS Logic (MESH) ---
+
+        function initPeer() {
+            return new Peer({
+                config: {'iceServers': [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:global.stun.twilio.com:3478' }
+                ]}
+            });
+        }
+
+        function createRoom() {
+            if (!localStream) {
+                showToast(t('allow_cam_mic'));
                 return;
             }
 
-            allMealEntries.sort((a, b) => new Date(b.date) - new Date(a.date) || a.memberId.localeCompare(b.memberId));
-            
-            allMealEntries.forEach(entry => {
-                const row = `
-                    <tr>
-                        <td>${entry.date}</td>
-                        <td>${getMemberName(entry.memberId)}</td>
-                        <td>${entry.count}</td>
-                        <td class="text-end table-actions">
-                            <button class="btn btn-sm btn-outline-primary me-2" data-id="${entry.id}" data-action="edit-meal"><i class="bi bi-pencil"></i></button>
-                            <button class="btn btn-sm btn-outline-danger" data-id="${entry.id}" data-action="delete-meal"><i class="bi bi-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-        };
-        
-        const renderReports = () => {
-            const tableBody = document.getElementById('reports-table-body');
-            const tableFooter = document.getElementById('reports-table-footer');
-            tableBody.innerHTML = '';
-            tableFooter.innerHTML = '';
-            
-            const totalExpenses = appData.expenses.reduce((sum, e) => sum + e.amount, 0);
-            const totalMeals = appData.meals.reduce((sum, day) => sum + Object.values(day.counts).reduce((dsum, count) => dsum + count, 0), 0);
-            const mealRate = totalMeals > 0 ? totalExpenses / totalMeals : 0;
-            
-            let grandTotalPaid = 0;
-            let grandTotalCost = 0;
-            let grandTotalBalance = 0;
+            localUserName = ui.userNameInput.value.trim() || t('meeting_host');
+            switchScreen('call');
+            showToast(t('generating_link'));
 
-            if (appData.members.length === 0) {
-                 tableBody.innerHTML = '<tr><td colspan="5" class="text-center p-4">No data to generate a report.</td></tr>';
-                 return;
-            }
-            
-            appData.members.forEach(member => {
-                const mealsByMember = appData.meals.reduce((sum, day) => sum + (day.counts[member.id] || 0), 0);
-                const paidByMember = appData.expenses.filter(e => e.paidBy == member.id).reduce((sum, e) => sum + e.amount, 0);
-                const costForMember = mealsByMember * mealRate;
-                const balance = paidByMember - costForMember;
+            peer = initPeer();
 
-                grandTotalPaid += paidByMember;
-                grandTotalCost += costForMember;
-                grandTotalBalance += balance;
-
-                const balanceClass = balance < 0 ? 'balance-owed' : 'balance-extra';
-                const balanceText = `${formatCurrency(Math.abs(balance))} ${balance < 0 ? '(Owed)' : '(Extra)'}`;
+            peer.on('open', (id) => {
+                activeRoomId = id; 
+                const link = getRoomLink(id);
+                ui.displayRoomId.innerText = link;
+                ui.waitingRoomId.innerText = link;
+                ui.roomInfo.classList.remove('hidden');
+                ui.roomInfo.classList.add('flex');
+                ui.waitingMessage.classList.remove('hidden');
                 
-                const row = `
-                    <tr>
-                        <td>${member.name}</td>
-                        <td>${mealsByMember}</td>
-                        <td>${formatCurrency(paidByMember)}</td>
-                        <td>${formatCurrency(costForMember)}</td>
-                        <td class="${balanceClass}">${balanceText}</td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
+                updateParticipantsList(); 
+                setupPeerListeners();
             });
 
-            const footerRow = `
-                <tr>
-                    <td><strong>Totals</strong></td>
-                    <td><strong>${totalMeals}</strong></td>
-                    <td><strong>${formatCurrency(grandTotalPaid)}</strong></td>
-                    <td><strong>${formatCurrency(grandTotalCost)}</strong></td>
-                    <td>Balance check: ${formatCurrency(grandTotalBalance)} ${Math.abs(grandTotalBalance) < 0.01 ? '✔' : '✖'}</td>
-                </tr>
-            `;
-            tableFooter.innerHTML = footerRow;
-        };
-        
-        const initializeMainApp = () => {
-            document.querySelector('.navbar-nav').addEventListener('click', (e) => {
-                if (e.target.matches('a.nav-link')) {
-                    e.preventDefault();
-                    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-                    e.target.classList.add('active');
-                    
-                    const pageId = e.target.dataset.page;
-                    document.querySelectorAll('#app-container .page').forEach(page => page.classList.remove('active'));
-                    document.getElementById(pageId).classList.add('active');
-                }
-            });
-            
-            document.getElementById('member-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const member = {
-                    id: editingItemId ? editingItemId : Date.now(),
-                    name: document.getElementById('member-name').value.trim(),
-                    joinDate: document.getElementById('member-join-date').value,
-                    leaveDate: document.getElementById('member-leave-date').value
-                };
-                
-                if (editingItemId) {
-                    const index = appData.members.findIndex(m => m.id == editingItemId);
-                    appData.members[index] = member;
-                } else {
-                    appData.members.push(member);
-                }
-                
-                saveData();
-                renderAll();
-                resetMemberForm();
-            });
-            
-            const resetMemberForm = () => {
-                document.getElementById('member-form').reset();
-                document.getElementById('member-form-title').textContent = 'Add New Member';
-                document.getElementById('cancel-member-edit-btn').style.display = 'none';
-                editingItemId = null;
-            };
-
-            document.getElementById('cancel-member-edit-btn').addEventListener('click', resetMemberForm);
-
-            document.getElementById('expense-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const expense = {
-                    id: editingItemId ? editingItemId : Date.now(),
-                    date: document.getElementById('expense-date').value,
-                    amount: parseFloat(document.getElementById('expense-amount').value),
-                    description: document.getElementById('expense-description').value.trim(),
-                    paidBy: parseInt(document.getElementById('expense-paid-by').value)
-                };
-                
-                if (editingItemId) {
-                    const index = appData.expenses.findIndex(exp => exp.id == editingItemId);
-                    appData.expenses[index] = expense;
-                } else {
-                    appData.expenses.push(expense);
-                }
-                
-                saveData();
-                renderAll();
-                resetExpenseForm();
-            });
-            
-            const resetExpenseForm = () => {
-                document.getElementById('expense-form').reset();
-                document.getElementById('expense-form-title').textContent = 'Add New Expense';
-                document.getElementById('cancel-expense-edit-btn').style.display = 'none';
-                editingItemId = null;
-            };
-            
-            document.getElementById('cancel-expense-edit-btn').addEventListener('click', resetExpenseForm);
-            
-            document.getElementById('meal-date').addEventListener('change', (e) => {
-                 populateMemberDropdowns(e.target.value);
-            });
-
-            document.getElementById('meal-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                const date = document.getElementById('meal-date').value;
-                const memberId = document.getElementById('meal-member-select').value;
-                const count = parseInt(document.getElementById('meal-count').value, 10);
-
-                if (!date || !memberId || isNaN(count)) {
-                    alert('Please fill all fields correctly.');
-                    return;
-                }
-
-                let dayEntry = appData.meals.find(m => m.date === date);
-                if (!dayEntry) {
-                    dayEntry = { id: date, date: date, counts: {} };
-                    appData.meals.push(dayEntry);
-                }
-
-                if (count > 0) {
-                    dayEntry.counts[memberId] = count;
-                } else {
-                    delete dayEntry.counts[memberId];
-                }
-
-                if (Object.keys(dayEntry.counts).length === 0) {
-                    appData.meals = appData.meals.filter(m => m.id !== date);
-                }
-                
-                saveData();
-                renderAll();
-                resetMealForm();
-            });
-
-            const resetMealForm = () => {
-                const mealForm = document.getElementById('meal-form');
-                mealForm.reset();
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('meal-date').value = today;
-                document.getElementById('meal-form-title').textContent = 'Add/Update Meal';
-                document.getElementById('cancel-meal-edit-btn').style.display = 'none';
-                document.getElementById('meal-member-select').disabled = false;
-                document.getElementById('meal-date').disabled = false;
-                editingItemId = null;
-            };
-
-            document.getElementById('cancel-meal-edit-btn').addEventListener('click', resetMealForm);
-
-            document.querySelector('#app-container main').addEventListener('click', (e) => {
-                const button = e.target.closest('button[data-action]');
-                if (!button) return;
-
-                const action = button.dataset.action;
-                const id = button.dataset.id;
-                
-                if (action === 'edit-member') {
-                    const member = appData.members.find(m => m.id == id);
-                    editingItemId = member.id;
-                    document.getElementById('member-id').value = member.id;
-                    document.getElementById('member-name').value = member.name;
-                    document.getElementById('member-join-date').value = member.joinDate;
-                    document.getElementById('member-leave-date').value = member.leaveDate;
-                    document.getElementById('member-form-title').textContent = 'Edit Member';
-                    document.getElementById('cancel-member-edit-btn').style.display = 'inline-block';
-                    document.querySelector('a[data-page="members"]').click();
-                    window.scrollTo(0, 0);
-                }
-                if (action === 'delete-member') {
-                    if (confirm('Are you sure you want to delete this member? This will also remove their associated expenses and meals.')) {
-                        appData.members = appData.members.filter(m => m.id != id);
-                        appData.expenses = appData.expenses.filter(e => e.paidBy != id);
-                        appData.meals.forEach(day => delete day.counts[id]);
-                        saveData();
-                        renderAll();
-                    }
-                }
-                
-                if (action === 'edit-expense') {
-                    const expense = appData.expenses.find(exp => exp.id == id);
-                    editingItemId = expense.id;
-                    document.getElementById('expense-id').value = expense.id;
-                    document.getElementById('expense-date').value = expense.date;
-                    document.getElementById('expense-amount').value = expense.amount;
-                    document.getElementById('expense-description').value = expense.description;
-                    document.getElementById('expense-paid-by').value = expense.paidBy;
-                    document.getElementById('expense-form-title').textContent = 'Edit Expense';
-                    document.getElementById('cancel-expense-edit-btn').style.display = 'inline-block';
-                    document.querySelector('a[data-page="expenses"]').click();
-                    window.scrollTo(0, 0);
-                }
-                if (action === 'delete-expense') {
-                    if (confirm('Are you sure you want to delete this expense?')) {
-                        appData.expenses = appData.expenses.filter(exp => exp.id != id);
-                        saveData();
-                        renderAll();
-                    }
-                }
-                
-                if (action === 'edit-meal') {
-                    const [date, memberId] = id.split('_');
-                    const dayEntry = appData.meals.find(m => m.date === date);
-                    if (!dayEntry) return;
-
-                    const count = dayEntry.counts[memberId];
-                    
-                    editingItemId = id;
-                    document.getElementById('meal-date').value = date;
-                    populateMemberDropdowns(date);
-                    document.getElementById('meal-member-select').value = memberId;
-                    document.getElementById('meal-count').value = count;
-                    
-                    document.getElementById('meal-form-title').textContent = 'Edit Meal';
-                    document.getElementById('cancel-meal-edit-btn').style.display = 'inline-block';
-                    document.getElementById('meal-member-select').disabled = true;
-                    document.getElementById('meal-date').disabled = true;
-
-                    document.querySelector('a[data-page="meals"]').click();
-                    window.scrollTo(0, 0);
-                }
-                if (action === 'delete-meal') {
-                    if (confirm('Are you sure you want to delete this meal entry?')) {
-                        const [date, memberId] = id.split('_');
-                        const dayEntry = appData.meals.find(m => m.date === date);
-                        if (dayEntry) {
-                            delete dayEntry.counts[memberId];
-                            if (Object.keys(dayEntry.counts).length === 0) {
-                                appData.meals = appData.meals.filter(m => m.id !== date);
-                            }
-                        }
-                        saveData();
-                        renderAll();
-                    }
-                }
-            });
-            
-            const generateReportPDF = () => {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-
-                if (appData.members.length === 0) {
-                    alert("No data available to generate a report.");
-                    return;
-                }
-
-                const reportTable = document.getElementById('reports-table-body');
-                const reportFooter = document.getElementById('reports-table-footer');
-                const head = [['Member Name', 'Total Meals', 'Total Paid (BDT)', 'Total Cost (BDT)', 'Balance (BDT)']];
-                
-                const body = [];
-                reportTable.querySelectorAll('tr').forEach(row => {
-                    const rowData = [];
-                    row.querySelectorAll('td').forEach(cell => {
-                        let cellText = cell.innerText.replace(/\(Owed\)/g, '').replace(/\(Extra\)/g, '').replace(/৳/g, '').trim();
-                        if (cell.classList.contains('balance-owed')) {
-                            cellText = `-${cellText}`;
-                        }
-                        rowData.push(cellText);
-                    });
-                    body.push(rowData);
-                });
-
-                const footer = [];
-                reportFooter.querySelectorAll('tr').forEach(row => {
-                    const rowData = [];
-                    row.querySelectorAll('td').forEach(cell => {
-                        rowData.push(cell.innerText.replace(/৳/g, '').trim());
-                    });
-                    footer.push(rowData);
-                });
-
-                const monthLabel = document.getElementById('dashboard-month-label').innerText;
-                const title = "Member Summary Report";
-                
-                doc.setFontSize(18);
-                doc.text(title, 14, 22);
-                doc.setFontSize(11);
-                doc.setTextColor(100);
-                doc.text(`Month: ${monthLabel}`, 14, 29);
-
-                doc.autoTable({
-                    head: head,
-                    body: body,
-                    foot: footer,
-                    startY: 35,
-                    theme: 'grid',
-                    headStyles: { fillColor: [79, 70, 229] },
-                    footStyles: { fillColor: [241, 245, 249], textColor: [30, 41, 59], fontStyle: 'bold' },
-                    didDrawPage: function (data) {
-                        const str = "Page " + doc.internal.getNumberOfPages();
-                        doc.setFontSize(10);
-                        const pageSize = doc.internal.pageSize;
-                        const pageHeight = pageSize.height ? pageSize.height : pageSize.getHeight();
-                        doc.text(str, data.settings.margin.left, pageHeight - 10);
-                    }
-                });
-
-                const date = new Date().toISOString().split('T')[0];
-                doc.save(`Mess_Report_${date}.pdf`);
-            };
-
-            document.getElementById('export-data-btn').addEventListener('click', generateReportPDF);
-            
-            document.getElementById('import-data-btn-visible').addEventListener('click', () => {
-                 document.getElementById('import-data').click();
-            });
-
-            document.getElementById('import-data').addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (!file) return;
-                
-                if (!confirm("Are you sure you want to import data? This will overwrite all current data.")) {
-                    event.target.value = '';
-                    return;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const importedData = JSON.parse(e.target.result);
-                        if (importedData.members && importedData.expenses && importedData.meals) {
-                            appData = importedData;
-                            saveData();
-                            renderAll();
-                            alert('Data imported successfully!');
-                        } else {
-                            alert('Invalid data file format.');
-                        }
-                    } catch (error) {
-                        alert('Error reading or parsing file: ' + error.message);
-                    } finally {
-                        event.target.value = '';
-                    }
-                };
-                reader.readAsText(file);
-            });
-            
-            document.getElementById('reset-data-btn').addEventListener('click', () => {
-                if (confirm('DANGER! This will delete ALL data and reset the app to a blank state. This action cannot be undone. Are you absolutely sure?')) {
-                    appData = getEmptyData();
-                    saveData();
-                    renderAll();
-                    alert('All data has been reset to a blank state.');
-                }
-            });
-
-            loadData();
-            renderAll();
-            
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('member-join-date').value = today;
-            document.getElementById('expense-date').value = today;
-            document.getElementById('meal-date').value = today;
-            populateMemberDropdowns(today);
+            handlePeerErrors();
         }
 
-        // --- INITIALIZATION ---
-        checkAuth();
-        
-    });
+        function joinRoom() {
+            let inputId = document.getElementById('join-id-input').value.trim();
+            if (!inputId) {
+                showToast(t('enter_id_link'));
+                return;
+            }
+            if (!localStream) {
+                showToast(t('allow_cam_mic'));
+                return;
+            }
+
+            localUserName = ui.userNameInput.value.trim() || t('guest');
+
+            if (inputId.includes('?room=')) {
+                inputId = inputId.split('?room=')[1].split('&')[0];
+            }
+            activeRoomId = inputId;
+
+            switchScreen('call');
+            ui.roomInfo.classList.add('hidden'); 
+            ui.waitingMessage.classList.add('hidden');
+            showToast(t('connecting_meeting'));
+
+            peer = initPeer();
+
+            peer.on('open', () => {
+                setupPeerListeners();
+                initiateConnection(inputId); 
+            });
+
+            handlePeerErrors();
+        }
+
+        function setupPeerListeners() {
+            peer.on('call', (call) => {
+                if (!peers[call.peer]) peers[call.peer] = { name: t('joining') };
+                peers[call.peer].call = call;
+                
+                call.answer(localStream);
+                setupMediaCallEvents(call);
+                
+                ui.waitingMessage.classList.add('hidden');
+            });
+
+            peer.on('connection', (conn) => {
+                if (!peers[conn.peer]) peers[conn.peer] = { name: t('joining') };
+                peers[conn.peer].data = conn;
+                
+                setupDataConnEvents(conn);
+            });
+        }
+
+        function initiateConnection(targetPeerId) {
+            if (peers[targetPeerId]) return; 
+            
+            peers[targetPeerId] = { name: t('connecting') };
+            
+            const call = peer.call(targetPeerId, localStream);
+            peers[targetPeerId].call = call;
+            setupMediaCallEvents(call);
+
+            const conn = peer.connect(targetPeerId);
+            peers[targetPeerId].data = conn;
+            setupDataConnEvents(conn);
+        }
+
+        function setupMediaCallEvents(call) {
+            call.on('stream', (stream) => {
+                if (peers[call.peer]) {
+                    peers[call.peer].stream = stream;
+                    addVideoElement(call.peer, stream);
+                }
+            });
+            call.on('close', () => removePeer(call.peer));
+            call.on('error', () => removePeer(call.peer));
+        }
+
+        function setupDataConnEvents(conn) {
+            ui.chatInput.disabled = false;
+            ui.chatSubmit.disabled = false;
+
+            conn.on('open', () => {
+                conn.send({ type: 'handshake', name: localUserName });
+            });
+
+            conn.on('data', (data) => {
+                if (data.type === 'handshake') {
+                    if (peers[conn.peer]) {
+                        peers[conn.peer].name = data.name;
+                        updateParticipantsList();
+                        updateVideoLabel(conn.peer, data.name);
+                        appendMessage(`${data.name} ${t('joined_room')}`, 'system');
+                    }
+
+                    if (peer.id === activeRoomId) {
+                        const existingPeers = Object.keys(peers).filter(p => p !== conn.peer);
+                        if (existingPeers.length > 0) {
+                            conn.send({ type: 'peer-list', list: existingPeers });
+                        }
+                    }
+                } 
+                else if (data.type === 'peer-list') {
+                    data.list.forEach(peerId => {
+                        if (peerId !== peer.id && !peers[peerId]) {
+                            initiateConnection(peerId);
+                        }
+                    });
+                } 
+                else if (data.type === 'chat') {
+                    const senderName = peers[conn.peer]?.name || t('guest');
+                    appendMessage(data.text, 'them', senderName);
+                    if (activeSidebar !== 'chat') {
+                        unreadMessages++;
+                        ui.chatBadge.innerText = unreadMessages > 9 ? '9+' : unreadMessages;
+                        ui.chatBadge.classList.remove('hidden');
+                    }
+                }
+                else if (data.type === 'leaving') {
+                    removePeer(conn.peer);
+                }
+            });
+
+            conn.on('close', () => removePeer(conn.peer));
+            conn.on('error', () => removePeer(conn.peer));
+        }
+
+        function handlePeerErrors() {
+            peer.on('error', (err) => {
+                console.error("Peer error:", err);
+                if (err.type === 'peer-unavailable') {
+                    if (Object.keys(peers).length === 0) {
+                        showToast(t('meeting_not_found'));
+                        endCall();
+                    }
+                } else {
+                    showToast(t('conn_error'));
+                }
+            });
+        }
+
+        // --- Dynamic Video Grid Rendering ---
+        function addVideoElement(peerId, stream) {
+            if (document.getElementById(`video-container-${peerId}`)) return; 
+            
+            const container = document.createElement('div');
+            container.id = `video-container-${peerId}`;
+            container.className = 'relative w-full h-full min-h-[140px] sm:min-h-[180px] rounded-2xl sm:rounded-[2rem] overflow-hidden shadow-2xl bg-slate-900 border border-white/5 transition-all duration-500 flex items-center justify-center group transform scale-[0.98] opacity-0';
+            
+            setTimeout(() => {
+                container.classList.remove('scale-[0.98]', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            }, 50);
+
+            const video = document.createElement('video');
+            video.id = `video-${peerId}`;
+            video.srcObject = stream;
+            video.autoplay = true;
+            video.playsInline = true;
+            video.muted = false; 
+            video.volume = 1; 
+            video.className = 'w-full h-full object-cover transition-transform duration-700 mirror-video group-hover:scale-105';
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-60 transition-opacity group-hover:opacity-80 pointer-events-none';
+
+            const nameLabel = document.createElement('div');
+            nameLabel.id = `label-${peerId}`;
+            nameLabel.className = 'absolute bottom-3 left-3 sm:bottom-4 sm:left-4 glass-panel-dark px-3 py-1 sm:px-4 sm:py-1.5 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-semibold text-white tracking-wide shadow-lg z-10 border border-white/10 backdrop-blur-md max-w-[80%] truncate pointer-events-none';
+            nameLabel.innerText = peers[peerId]?.name || t('connecting');
+            
+            container.appendChild(video);
+            container.appendChild(overlay);
+            container.appendChild(nameLabel);
+            ui.videoGrid.appendChild(container);
+            
+            updateGridClasses();
+        }
+
+        function updateVideoLabel(peerId, name) {
+            const label = document.getElementById(`label-${peerId}`);
+            if (label) label.innerText = name;
+        }
+
+        function removePeer(peerId) {
+            if (peers[peerId]) {
+                const name = peers[peerId].name || t('guest');
+                if (peers[peerId].call) peers[peerId].call.close();
+                if (peers[peerId].data) peers[peerId].data.close();
+                appendMessage(`${name} ${t('left_room')}`, 'system');
+                delete peers[peerId];
+            }
+            
+            const el = document.getElementById(`video-container-${peerId}`);
+            if (el) {
+                el.classList.replace('scale-100', 'scale-95');
+                el.classList.replace('opacity-100', 'opacity-0');
+                setTimeout(() => el.remove(), 300);
+            }
+            
+            updateParticipantsList();
+            setTimeout(updateGridClasses, 300); 
+        }
+
+        function updateGridClasses() {
+            const count = Object.keys(peers).length;
+            
+            ui.videoGrid.className = 'w-full h-full p-3 sm:p-6 pt-20 sm:pt-28 pb-[120px] sm:pb-36 gap-2 sm:gap-6 grid place-items-center transition-all duration-500 ease-in-out custom-scroll overflow-y-auto';
+            
+            if (count === 0) {
+                if (peer && peer.id === activeRoomId) {
+                    ui.waitingMessage.classList.remove('hidden');
+                }
+            } else {
+                ui.waitingMessage.classList.add('hidden');
+                
+                if (count === 1) {
+                    ui.videoGrid.classList.add('grid-cols-1', 'max-w-5xl', 'mx-auto');
+                } else if (count === 2) {
+                    ui.videoGrid.classList.add('grid-cols-1', 'sm:grid-cols-2', 'max-w-6xl', 'mx-auto');
+                } else if (count <= 4) {
+                    ui.videoGrid.classList.add('grid-cols-2', 'max-w-7xl', 'mx-auto');
+                } else if (count <= 6) {
+                    ui.videoGrid.classList.add('grid-cols-2', 'md:grid-cols-3', 'max-w-7xl', 'mx-auto');
+                } else if (count <= 9) {
+                    ui.videoGrid.classList.add('grid-cols-2', 'md:grid-cols-3', 'lg:grid-cols-4', 'max-w-full');
+                } else {
+                    ui.videoGrid.classList.add('grid-cols-3', 'md:grid-cols-4', 'lg:grid-cols-5', 'max-w-full');
+                }
+            }
+        }
+
+        // --- Screen Sharing ---
+        async function toggleScreenShare() {
+            if (Object.keys(peers).length === 0) {
+                showToast(t('share_screen_prompt'));
+                return;
+            }
+
+            if (!isScreenSharing) {
+                try {
+                    // Optimized Screen Share Frame Rate for Low Bandwidth
+                    screenStream = await navigator.mediaDevices.getDisplayMedia({ 
+                        video: { frameRate: { ideal: 10, max: 15 } } 
+                    });
+                    const videoTrack = screenStream.getVideoTracks()[0];
+                    
+                    Object.values(peers).forEach(p => {
+                        if (p.call && p.call.peerConnection) {
+                            const sender = p.call.peerConnection.getSenders().find(s => s.track.kind === 'video');
+                            if (sender) sender.replaceTrack(videoTrack);
+                        }
+                    });
+                    
+                    isScreenSharing = true;
+                    ui.btnScreen.classList.replace('bg-white/10', 'bg-indigo-500');
+                    ui.btnScreen.classList.replace('hover:bg-white/20', 'hover:bg-indigo-600');
+                    ui.btnScreen.querySelector('i').classList.replace('fa-desktop', 'fa-stop-circle');
+                    
+                    videoTrack.onended = () => stopScreenShare();
+                } catch (e) {
+                    console.error("Screen share failed", e);
+                }
+            } else {
+                stopScreenShare();
+            }
+        }
+
+        function stopScreenShare() {
+            if (!isScreenSharing) return;
+            
+            const videoTrack = localStream.getVideoTracks()[0];
+            
+            Object.values(peers).forEach(p => {
+                if (p.call && p.call.peerConnection) {
+                    const sender = p.call.peerConnection.getSenders().find(s => s.track.kind === 'video');
+                    if (sender) sender.replaceTrack(videoTrack);
+                }
+            });
+            
+            if (screenStream) {
+                screenStream.getTracks().forEach(track => track.stop());
+            }
+            
+            isScreenSharing = false;
+            ui.btnScreen.classList.replace('bg-indigo-500', 'bg-white/10');
+            ui.btnScreen.classList.replace('hover:bg-indigo-600', 'hover:bg-white/20');
+            ui.btnScreen.querySelector('i').classList.replace('fa-stop-circle', 'fa-desktop');
+        }
+
+        // --- Chat System ---
+        function sendChatMessage(e) {
+            e.preventDefault();
+            const text = ui.chatInput.value.trim();
+            if (!text) return;
+
+            let sentToAnyone = false;
+
+            Object.values(peers).forEach(p => {
+                if (p.data && p.data.open) {
+                    p.data.send({ type: 'chat', text: text });
+                    sentToAnyone = true;
+                }
+            });
+
+            if (sentToAnyone) {
+                appendMessage(text, 'me', localUserName);
+                ui.chatInput.value = '';
+            } else {
+                showToast(t('wait_for_chat'));
+            }
+        }
+
+        function appendMessage(text, sender, senderName = '') {
+            const msgDiv = document.createElement('div');
+            
+            if (sender === 'system') {
+                msgDiv.className = 'text-center my-3';
+                msgDiv.innerHTML = `<span class="bg-white/10 text-slate-300 text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full border border-white/5">${text}</span>`;
+            } else {
+                const isMe = sender === 'me';
+                msgDiv.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-4 sm:mb-5 group`;
+                
+                const nameLabel = document.createElement('div');
+                nameLabel.className = 'text-[9px] sm:text-[10px] font-semibold text-slate-400 mb-1.5 px-1 uppercase tracking-wider';
+                nameLabel.innerText = isMe ? t('you_label') : senderName;
+
+                const bubble = document.createElement('div');
+                bubble.className = `max-w-[90%] px-3.5 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-white shadow-lg ${isMe ? 'chat-bubble-me rounded-2xl rounded-tr-sm' : 'chat-bubble-them rounded-2xl rounded-tl-sm backdrop-blur-md'}`;
+                bubble.innerText = text;
+                
+                const time = document.createElement('div');
+                time.className = 'text-[8px] sm:text-[9px] font-medium text-slate-500 mt-1 sm:mt-1.5 px-1 opacity-0 group-hover:opacity-100 transition-opacity';
+                time.innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                msgDiv.appendChild(nameLabel);
+                msgDiv.appendChild(bubble);
+                msgDiv.appendChild(time);
+            }
+
+            ui.chatMessages.appendChild(msgDiv);
+            ui.chatMessages.scrollTop = ui.chatMessages.scrollHeight;
+        }
+
+        // --- UI Controls ---
+
+        function toggleSidebar(panel) {
+            if (activeSidebar === panel) {
+                closeSidebar();
+                return;
+            }
+
+            ui.sidebar.classList.remove('translate-x-full');
+            ui.videoArea.classList.add('sm:pr-[380px]');
+            
+            activeSidebar = panel;
+
+            if (panel === 'chat') {
+                ui.sidebarTitle.innerText = t('chat_title');
+                ui.chatContent.classList.remove('hidden');
+                ui.participantsContent.classList.add('hidden');
+                
+                unreadMessages = 0;
+                ui.chatBadge.classList.add('hidden');
+                
+                ui.chatMessages.scrollTop = ui.chatMessages.scrollHeight;
+                setTimeout(() => ui.chatInput.focus(), 300);
+            } else if (panel === 'participants') {
+                const totalCount = Object.keys(peers).length + 1;
+                ui.sidebarTitle.innerText = `${t('in_call')} (${totalCount})`;
+                ui.participantsContent.classList.remove('hidden');
+                ui.chatContent.classList.add('hidden');
+            }
+        }
+
+        function closeSidebar() {
+            ui.sidebar.classList.add('translate-x-full');
+            ui.videoArea.classList.remove('sm:pr-[380px]');
+            
+            setTimeout(() => {
+                ui.chatContent.classList.add('hidden');
+                ui.participantsContent.classList.add('hidden');
+            }, 500);
+            activeSidebar = null;
+        }
+
+        function updateParticipantsList() {
+            const isHost = (peer && peer.id === activeRoomId);
+            const totalCount = Object.keys(peers).length + 1;
+            
+            let html = `
+                <div class="flex items-center justify-between p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/10 border border-white/10 shadow-sm backdrop-blur-md transition-all hover:bg-white/15">
+                    <div class="flex items-center gap-3 sm:gap-4 truncate">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-lg sm:rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 text-white flex items-center justify-center font-bold text-base sm:text-lg shadow-inner">
+                            ${localUserName ? localUserName.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                        <div class="flex flex-col truncate">
+                            <span class="text-white font-semibold text-xs sm:text-sm truncate">${localUserName} (${t('you_label')})</span>
+                            <span class="text-indigo-300 text-[9px] sm:text-[10px] uppercase tracking-wider font-bold">${isHost ? t('meeting_host') : t('participant')}</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-1.5 sm:gap-2 text-slate-400 text-[10px] sm:text-xs bg-black/20 p-1.5 sm:p-2 rounded-lg sm:rounded-xl border border-white/5 shrink-0">
+                        <i class="fas ${isMicMuted ? 'fa-microphone-slash text-rose-400' : 'fa-microphone text-emerald-400'} w-3 sm:w-4 text-center"></i>
+                        <i class="fas ${isCamOff ? 'fa-video-slash text-rose-400' : 'fa-video text-emerald-400'} w-3 sm:w-4 text-center"></i>
+                    </div>
+                </div>
+            `;
+
+            Object.keys(peers).forEach(pid => {
+                const p = peers[pid];
+                const pName = p.name || t('connecting');
+                const isPeerHost = (pid === activeRoomId);
+                
+                html += `
+                    <div class="flex items-center justify-between p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/5 mt-2 sm:mt-3 hover:bg-white/10 transition-colors">
+                        <div class="flex items-center gap-3 sm:gap-4 truncate">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-lg sm:rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold text-base sm:text-lg border border-white/10">
+                                ${pName.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="flex flex-col truncate pr-2">
+                                <span class="text-white font-semibold text-xs sm:text-sm truncate">${pName}</span>
+                                <span class="text-slate-400 text-[9px] sm:text-[10px] uppercase tracking-wider font-bold">${isPeerHost ? t('meeting_host') : t('participant')}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-1.5 sm:gap-2 text-emerald-400 text-[10px] sm:text-xs bg-emerald-500/10 p-1.5 sm:p-2 rounded-lg sm:rounded-xl border border-emerald-500/20 shrink-0">
+                            <i class="fas fa-signal" title="Connected"></i>
+                        </div>
+                    </div>
+                `;
+            });
+
+            ui.participantsList.innerHTML = html;
+            
+            ui.participantsBadge.innerText = totalCount;
+            if (totalCount > 1) {
+                ui.participantsBadge.classList.remove('hidden');
+            } else {
+                ui.participantsBadge.classList.add('hidden');
+            }
+
+            if (activeSidebar === 'participants') {
+                ui.sidebarTitle.innerText = `${t('in_call')} (${totalCount})`;
+            }
+        }
+
+        function updateMicUI() {
+            const icon = ui.btnMic.querySelector('i');
+            if (isMicMuted) {
+                icon.className = 'fas fa-microphone-slash text-sm sm:text-xl group-hover:-translate-y-0.5 transition-transform relative z-10';
+                ui.btnMic.classList.replace('bg-white/10', 'bg-rose-500/20');
+                ui.btnMic.classList.replace('hover:bg-white/20', 'hover:bg-rose-500/30');
+                ui.btnMic.classList.add('text-rose-400');
+                ui.btnMic.classList.remove('text-white');
+                ui.localMicIndicator.classList.remove('hidden');
+            } else {
+                icon.className = 'fas fa-microphone text-sm sm:text-xl group-hover:-translate-y-0.5 transition-transform relative z-10';
+                ui.btnMic.classList.replace('bg-rose-500/20', 'bg-white/10');
+                ui.btnMic.classList.replace('hover:bg-rose-500/30', 'hover:bg-white/20');
+                ui.btnMic.classList.remove('text-rose-400');
+                ui.btnMic.classList.add('text-white');
+                ui.localMicIndicator.classList.add('hidden');
+            }
+            updateParticipantsList();
+        }
+
+        function updateVideoUI() {
+            const icon = ui.btnVideo.querySelector('i');
+            if (isCamOff) {
+                icon.className = 'fas fa-video-slash text-sm sm:text-xl group-hover:-translate-y-0.5 transition-transform relative z-10';
+                ui.btnVideo.classList.replace('bg-white/10', 'bg-rose-500/20');
+                ui.btnVideo.classList.replace('hover:bg-white/20', 'hover:bg-rose-500/30');
+                ui.btnVideo.classList.add('text-rose-400');
+                ui.btnVideo.classList.remove('text-white');
+            } else {
+                icon.className = 'fas fa-video text-sm sm:text-xl group-hover:-translate-y-0.5 transition-transform relative z-10';
+                ui.btnVideo.classList.replace('bg-rose-500/20', 'bg-white/10');
+                ui.btnVideo.classList.replace('hover:bg-rose-500/30', 'hover:bg-white/20');
+                ui.btnVideo.classList.remove('text-rose-400');
+                ui.btnVideo.classList.add('text-white');
+            }
+            updateParticipantsList();
+        }
+
+        function toggleMic() {
+            if (!localStream) return;
+            if (isDummyStream) { showToast(t('no_mic')); return; }
+            
+            const audioTracks = localStream.getAudioTracks();
+            if (audioTracks.length > 0) {
+                isMicMuted = !isMicMuted;
+                audioTracks[0].enabled = !isMicMuted;
+                updateMicUI();
+            } else {
+                showToast(t('mic_not_found'));
+            }
+        }
+
+        function toggleVideo() {
+            if (!localStream) return;
+            if (isDummyStream) { showToast(t('no_cam')); return; }
+            
+            const videoTracks = localStream.getVideoTracks();
+            if (videoTracks.length > 0) {
+                isCamOff = !isCamOff;
+                videoTracks[0].enabled = !isCamOff;
+                updateVideoUI();
+            } else {
+                showToast(t('cam_not_found'));
+            }
+        }
+
+        function endCall() {
+            if (isScreenSharing) stopScreenShare();
+
+            Object.values(peers).forEach(p => {
+                if (p.data && p.data.open) {
+                    p.data.send({ type: 'leaving' });
+                }
+            });
+
+            Object.keys(peers).forEach(pid => {
+                if (peers[pid].call) peers[pid].call.close();
+                if (peers[pid].data) peers[pid].data.close();
+                removePeer(pid);
+            });
+            
+            if (peer) {
+                peer.destroy();
+                peer = null;
+            }
+            
+            closeSidebar();
+            
+            ui.chatMessages.innerHTML = `
+                <div class="text-center bg-white/5 rounded-2xl py-3 px-4 mx-auto border border-white/5">
+                    <i class="fas fa-lock text-indigo-400 mb-2 text-base sm:text-lg"></i>
+                    <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium leading-relaxed" data-i18n="secure_chat_welcome">${t('secure_chat_welcome')}</p>
+                </div>
+            `;
+            ui.chatInput.disabled = true;
+            ui.chatSubmit.disabled = true;
+            
+            try {
+                if (window.location.protocol !== 'blob:') {
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            } catch (e) {
+                console.warn("Sandbox er karone URL history update kora jayni.", e);
+            }
+            
+            document.getElementById('join-id-input').value = '';
+            switchScreen('setup');
+            showToast(t('left_meeting'));
+        }
+
+        // --- Utility Functions ---
+
+        function switchScreen(screenName) {
+            if (screenName === 'call') {
+                screens.setup.classList.add('hidden');
+                screens.setup.classList.remove('flex');
+                screens.call.classList.remove('hidden');
+                screens.call.classList.add('flex');
+            } else {
+                screens.call.classList.add('hidden');
+                screens.call.classList.remove('flex');
+                screens.setup.classList.remove('hidden');
+                screens.setup.classList.add('flex');
+                ui.waitingMessage.classList.add('hidden');
+            }
+        }
+
+        function getRoomLink(id) {
+            try {
+                if (window.location.protocol === 'blob:') {
+                    return id; 
+                }
+                const url = new URL(window.location.href);
+                url.searchParams.set('room', id);
+                return url.toString();
+            } catch (e) {
+                return id;
+            }
+        }
+
+        function copyRoomLink() {
+            const linkToCopy = activeRoomId ? getRoomLink(activeRoomId) : document.getElementById('waiting-room-id').innerText;
+            if (!linkToCopy) return;
+            
+            const tempInput = document.createElement("input");
+            tempInput.value = linkToCopy;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            
+            try {
+                document.execCommand("copy");
+                showToast(t('link_copied'));
+            } catch (err) {
+                showToast(t('link_copy_failed'));
+            }
+            
+            document.body.removeChild(tempInput);
+        }
+
+        let toastTimeout;
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            
+            toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-[-20px]');
+            }, 3000);
+        }
+
     </script>
 </body>
 </html>
